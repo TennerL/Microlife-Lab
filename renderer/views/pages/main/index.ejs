@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../../common/head'); %>
+  <style>
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      height: 50px;
+      margin: 5px;
+    }
+    .controls button {
+      padding: 10px 20px;
+      font-size: 16px;
+    }
+    .projectContainer {
+      height: 100%;
+      display: flex;
+    }
+    .dlNewProject {
+      width: 100%;
+      height: 100%;
+      border-radius: 15px;
+      border: none;
+    }
+    .projectContainer {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .projects {
+      margin: 5px;
+    }
+    .slNewProject {
+      width: 80%;
+    }
+    .txtSlValue {
+      width: 10%;
+      margin-left: 10px; /* Add some space between slider and textbox */
+      display: inline-block;
+    }
+    .slider-container {
+      display: flex;
+      align-items: center;
+    }
+    #projectContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%; /* Passt die Höhe des Containers an */
+    }
+
+    .centered-text {
+        text-align: center;
+        font-size: 1.5rem;
+    }
+    .projectCard {
+     
+      border: 1px solid;
+      box-shadow: 1px 1px 8px 1px black;
+    }
+
+
+
+  </style>
+</head>
+<body class="container bg-dark text-light">
+
+<header>
+  <%- include('../../common/header'); %>
+</header>
+
+<main>
+  <script src="/js/main.js"></script>
+  <div id="controls" class="controls">
+    <div></div>
+    <button id="btnNewProject" class="btn btn-primary">+</button>
+  </div>
+
+  <dialog id="dlNewProject" class="dlNewProject bg-dark text-light">
+    <!--Titel mit x-Button-->
+    <div class="row">
+      <div class="col-sm-11" style="text-align: left;">
+        <b>Projekt erstellen</b>
+      </div>
+      <div class="col-sm-1" style="text-align: right;">
+        <button class="btn btn-danger" id="btnCloseNewProject">x</button>
+      </div>      
+    </div>
+    <form>
+      <div class="form-group">
+        <!-- Projektname -->
+        <div class="row">
+          <div class="col-md-7">
+            <input type="text" id="txtProjectName" class="form-control" placeholder="Projektname">
+          </div>
+        </div>
+        <!-- Eingabeparameter für das Projekt -->
+        <br>
+        <div class="row">
+          <!-- Temperature Slider -->
+          <div class="col-md-12">
+            <label for="lblTemperatureRange" class="form-label">Temperatur</label><br>
+            <div class="slider-container">
+              <input type="range" class="form-range slNewProject" min="0" max="100" id="slTemperatureRange">
+              <input type="text" id="txtTemperatureValue" class="form-control txtSlValue" value="0" readonly>
+            </div>
+          </div>
+    
+          <!-- Concentration Slider -->
+          <div class="col-md-12">
+            <label for="lblConcentration" class="form-label">Nährstoffkonzentration (%)</label><br>
+            <div class="slider-container">
+              <input type="range" class="form-range slNewProject" min="0" max="100" id="slConcentrationRange">
+              <input type="text" id="txtConcentrationValue" class="form-control txtSlValue" value="0" readonly>
+            </div>
+          </div>
+    
+          <!-- Mutation Probability Slider -->
+          <div class="col-md-12">
+            <label for="lblMutationRange" class="form-label">Mutationswarscheinlichkeit (%)</label><br>
+            <div class="slider-container">
+              <input type="range" class="form-range slNewProject" min="0" max="100" id="slMutationRange">
+              <input type="text" id="txtMutationValue" class="form-control txtSlValue" value="0" readonly>
+            </div>
+          </div>
+        </div>
+        <br>
+        <div class="row">
+          <div class="col-md-2">
+            <label for="lblMoistureBtn" class="form-label">Feuchtigkeitsgrad</label>
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+              <label class="btn btn-secondary">
+                <input type="radio" name="moistureOptions" value="0" autocomplete="off"> Trocken
+              </label>
+              <label class="btn btn-secondary">
+                <input type="radio" name="moistureOptions" value="1" autocomplete="off"> Normal
+              </label>
+              <label class="btn btn-secondary">
+                <input type="radio" name="moistureOptions" value="2" autocomplete="off"> Feucht
+              </label>
+            </div>
+          </div>
+        </div>
+        <br>
+        <!-- Bakterienkolonieauswahl-->
+        <div class="row">
+          <div class="col-md-2">
+            <label for="ddlMicroOrganisms" class="form-label">Mikroorganismus</label>
+            <select id="ddlMicroOrganisms" class="form-control">
+              <optgroup label="Pilze">
+                <option value="candida">Candida albicans</option>
+                <option value="aspergillus">Aspergillus niger</option>
+                <option value="penicillium">Penicillium notatum</option>
+              </optgroup>
+              <optgroup label="Bakterien">
+                <option value="ecoli">Escherichia coli</option>
+                <option value="staphylococcus">Staphylococcus aureus</option>
+                <option value="bacillus">Bacillus subtilis</option>
+              </optgroup>
+            </select>
+          </div>
+        </div>
+      </div>
+    </form>
+    <div class="row" style="position:absolute; bottom:20px; right:2%">
+      <div class="col-sm-10" style="text-align: left;">
+      </div>
+      <div class="col-sm-2" style="text-align: right;">
+        <button class="btn btn-primary" id="btnSaveNewProject">Speichen</button>
+      </div>
+    </div>
+  </dialog>
+
+  <div class="row projectContainer" id="projectContainer">
+
+  </div>
+
+</main>
+
+<footer>
+  <%- include('../../common/footer'); %>
+</footer>
+
+</body>
+</html>

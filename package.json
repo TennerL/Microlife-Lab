@@ -1,0 +1,20 @@
+{
+  "name": "bs-projekt",
+  "version": "1.0.0",
+  "main": "main.mjs",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "ejs": "^3.1.10",
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "electron": "^32.0.1"
+  }
+}

@@ -12,16 +12,25 @@ let mutationProbability = selectedProject.mutationProbability;
 let microOrganism = selectedProject.microOrganism;
 let moisture = selectedProject.moisture;
 
+const timeOptions = document.querySelectorAll('input[name="timeOptions"]');
+
 ////////////////////////
 // Beginn Simulation ///
 ////////////////////////
+
+let timeScale = 0.1;
+timeOptions.forEach(option => {
+    option.addEventListener('change', function(){
+        timeScale = document.querySelector('input[name="timeOptions"]:checked').value;
+        console.log(timeScale);
+    });
+});
 
 let temperatureSlider, nutrientSlider, humiditySelect;
 let microbes = [];
 let numMicrobes = 500;
 let growthRate, mutationRate, environmentMoisture;
 let petriRadius;
-let timeScale = 0.1;
 let fun = false; 
 
 function setup() {
@@ -50,7 +59,6 @@ function setup() {
     }
 }
 
-// Wachstumsrate
 // Wachstumsrate basierend auf Temperatur und Nährstoffkonzentration
 function calculateGrowthRate(temperature, concentration) {
     let baseGrowthRate;
@@ -70,13 +78,13 @@ function calculateGrowthRate(temperature, concentration) {
     // Nährstoffkonzentration beeinflusst die Wachstumsrate linear (z.B. von 0 bis 100 %)
     // Konzentration in Prozent, 0 % = kein Wachstum, 100 % = volles Wachstum
     let nutrientFactor = concentration / 100;
-    
     return baseGrowthRate * nutrientFactor;
 }
 
 function setup() {
     let canvas = createCanvas(600, 600); 
     canvas.parent('canvas-container');
+    canvas.style.borderRadius = '50%';
     
     petriRadius = (width - 50) / 2; 
     
@@ -84,8 +92,8 @@ function setup() {
     let temperature = selectedProject.temperature; // von 0 bis 100 °C
     let concentration = selectedProject.concentration; // Nährstoffkonzentration in %
     let mutationProbability = selectedProject.mutationProbability; // Mutationswahrscheinlichkeit
-    let microOrganism = selectedProject.microOrganism; // Verschiedene Mikroorganismen
     let moisture = selectedProject.moisture; // Feuchtigkeitsstufe --> Bewegung der Mikroben
+    let microOrganism = selectedProject.microOrganism; // Verschiedene Mikroorganismen
 
     // Wachstumsrate basierend auf Temperatur und Nährstoffkonzentration
     growthRate = calculateGrowthRate(temperature, concentration) * timeScale; 

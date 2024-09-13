@@ -1,18 +1,16 @@
-//Projekt aus URL-Parameter holen 
-const queryString = window.location.search
+const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
-let projectName = urlParams.get('projectName')
-    
-//Projektdaten auslesen und für die Simulation verwenden
+let projectName = urlParams.get('projectName');
+
 let savedProjects = localStorage.getItem('savedProjects');
 savedProjects = JSON.parse(savedProjects);
 let selectedProject = savedProjects.find(project => project.projectName === projectName);
 
-let temperature = selectedProject.temperature 
-let concentration = selectedProject.concentration
-let mutationProbability = selectedProject.mutationProbability
-let microOrganism = selectedProject.microOrganism
-let moisture = selectedProject.moisture
+let temperature = selectedProject.temperature;
+let concentration = selectedProject.concentration;
+let mutationProbability = selectedProject.mutationProbability;
+let microOrganism = selectedProject.microOrganism;
+let moisture = selectedProject.moisture;
 
 ////////////////////////
 // Beginn Simulation ///
@@ -23,7 +21,8 @@ let microbes = [];
 let numMicrobes = 500;
 let growthRate, mutationRate, environmentMoisture;
 let petriRadius;
-let timeScale = 1; // Beschleunigt den Prozess um das 100-fache
+let timeScale = 0.1;
+let fun = false; 
 
 function setup() {
     let canvas = createCanvas(600, 600); 
@@ -33,17 +32,15 @@ function setup() {
     
     // Simulationsparameter aus dem Projekt lesen
     let temperature = selectedProject.temperature; // von 0 bis 100 °C
-    let concentration = selectedProject.concentration; // Nährstoffkonzentration --> muss noch eingebaut werden 
-    let mutationProbability = selectedProject.mutationProbability; // Mutationswahrscheinlichkeit --> muss noch eingebaut werden 
-    let microOrganism = selectedProject.microOrganism; // Verschiedene Mikroorganismen müssen noch eingebaut werden 
-    let moisture = selectedProject.moisture; // Feuchtigkeitsstufe --> beweging der Mikroben 
+    let concentration = selectedProject.concentration; // Nährstoffkonzentration --> muss noch eingebaut werden
+    let mutationProbability = selectedProject.mutationProbability; // Mutationswahrscheinlichkeit
+    let microOrganism = selectedProject.microOrganism; // Verschiedene Mikroorganismen
+    let moisture = selectedProject.moisture; // Feuchtigkeitsstufe --> Bewegung der Mikroben
 
-    // Anpassung der Wachstumsrate basierend auf der Temperatur
     growthRate = calculateGrowthRate(temperature) * timeScale; 
     mutationRate = mutationProbability * timeScale / 100;
     environmentMoisture = moisture; 
 
-    // Mikroben initialisieren
     for (let i = 0; i < numMicrobes; i++) {
         let angle = random(TWO_PI); 
         let r = random(petriRadius);
@@ -53,7 +50,7 @@ function setup() {
     }
 }
 
-// Funktion zur Berechnung der Wachstumsrate basierend auf der Temperatur
+// Wachstumsrate
 function calculateGrowthRate(temperature) {
     if (temperature <= 0 || temperature > 50) {
         return 0;
@@ -68,17 +65,16 @@ function calculateGrowthRate(temperature) {
     }
 }
 
-// Microbe class
 class Microbe {
     constructor(x, y) {
         this.x = x;
         this.y = y;
-        this.size = random(2, 5); // Initiale Größe der Mikroben
+        this.size = random(0, 5); 
         this.growthFactor = growthRate;
     }
 
     move() {
-        let speed = map(environmentMoisture, 0, 2, 0.1, 1) * timeScale; // Bewegung je nach Feuchtigkeit
+        let speed = map(environmentMoisture, 0, 2, 0.1, 1) * timeScale;
         let newX = this.x + random(-speed, speed);
         let newY = this.y + random(-speed, speed);
 
@@ -90,29 +86,35 @@ class Microbe {
     }
 
     grow() {
-        this.size += this.growthFactor; // Wachstum der Mikroben
+        this.size += this.growthFactor; 
         if (random() < mutationRate) {
-            this.size *= random(0.95, 1.05); // Kleine Größenänderungen durch Mutation
+            this.size *= random(0.95, 1.05); 
         }
     }
 
     display() {
-        fill(100, 255, 100, 150);
+        if (fun) {
+            fill(random(255), random(255), random(255), 150);
+        } else {
+            fill(100, 255, 100, 150);
+        }
         noStroke();
         ellipse(this.x, this.y, this.size, this.size);
     }
 }
 
 function draw() {
-    // Hintergrund nicht gelöscht, um Kolonien zu sehen
-    stroke(0);
-    fill(255);
-    ellipse(width / 2, height / 2, width - 50, height - 50); // Petrischale zeichnen
+    stroke(255);
+    fill(50); 
+    ellipse(width / 2, height / 2, width - 50, height - 50); 
 
-    // Mikroben bewegen, wachsen und darstellen
     for (let i = 0; i < microbes.length; i++) {
         microbes[i].move();
         microbes[i].grow();
         microbes[i].display();
     }
+}
+
+if (selectedProject.projectName === "Party") {
+    fun = true;
 }

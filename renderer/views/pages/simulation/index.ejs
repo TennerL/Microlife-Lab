@@ -8,30 +8,28 @@
     text-align: center;
     margin: 0;
     padding: 0;
-
     }
-
     h1 {
         margin-top: 20px;
     }
-
     #canvas-container {
         display: inline-block;
         margin-top: 20px;
     }
-
     input[type=range] {
         width: 200px;
     }
-
     label {
         margin-right: 10px;
     }
-
     div {
         margin: 10px;
     }
-
+    .timeContros{
+    position: absolute;
+    right: 10vh;
+    width: 50vh;
+    }
   </style>
 </head>
 <body class="container bg-dark text-light">
@@ -42,6 +40,23 @@
 
 
 <main>
+  <div class="row timeContros">
+    <div class="col-sm-11" style="text-align: right;">
+    <div class="btn-group btn-group-toggle" data-toggle="buttons">
+      <label class="btn btn-primary">
+        <input type="radio" name="timeOptions" value="0.1" autocomplete="off" checked> <b>1x</b></input>
+      </label>
+      <label class="btn btn-primary">
+        <input type="radio" name="timeOptions" value="1" autocomplete="off"> <b>2x</b></input>
+      </label>
+      <label class="btn btn-primary">
+        <input type="radio" name="timeOptions" value="10" autocomplete="off"> <b>10x</b></input>
+      </label>
+    </div>
+  </div>
+</div>
+
+
 <script src="/js/simulation.js"></script>
     <div id="canvas-container"></div>
 </main>

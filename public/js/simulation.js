@@ -51,17 +51,53 @@ function setup() {
 }
 
 // Wachstumsrate
-function calculateGrowthRate(temperature) {
+// Wachstumsrate basierend auf Temperatur und Nährstoffkonzentration
+function calculateGrowthRate(temperature, concentration) {
+    let baseGrowthRate;
+    
     if (temperature <= 0 || temperature > 50) {
-        return 0;
+        baseGrowthRate = 0;
     } else if (temperature > 0 && temperature < 5) {
-        return 0.001; 
+        baseGrowthRate = 0.001; 
     } else if (temperature >= 5 && temperature < 20) {
-        return map(temperature, 5, 20, 0.01, 0.05); 
+        baseGrowthRate = map(temperature, 5, 20, 0.01, 0.05); 
     } else if (temperature >= 20 && temperature <= 37) {
-        return map(temperature, 20, 37, 0.05, 0.2); 
+        baseGrowthRate = map(temperature, 20, 37, 0.05, 0.2); 
     } else if (temperature > 37 && temperature <= 50) {
-        return map(temperature, 37, 50, 0.2, 0.01);
+        baseGrowthRate = map(temperature, 37, 50, 0.2, 0.01);
+    }
+
+    // Nährstoffkonzentration beeinflusst die Wachstumsrate linear (z.B. von 0 bis 100 %)
+    // Konzentration in Prozent, 0 % = kein Wachstum, 100 % = volles Wachstum
+    let nutrientFactor = concentration / 100;
+    
+    return baseGrowthRate * nutrientFactor;
+}
+
+function setup() {
+    let canvas = createCanvas(600, 600); 
+    canvas.parent('canvas-container');
+    
+    petriRadius = (width - 50) / 2; 
+    
+    // Simulationsparameter aus dem Projekt lesen
+    let temperature = selectedProject.temperature; // von 0 bis 100 °C
+    let concentration = selectedProject.concentration; // Nährstoffkonzentration in %
+    let mutationProbability = selectedProject.mutationProbability; // Mutationswahrscheinlichkeit
+    let microOrganism = selectedProject.microOrganism; // Verschiedene Mikroorganismen
+    let moisture = selectedProject.moisture; // Feuchtigkeitsstufe --> Bewegung der Mikroben
+
+    // Wachstumsrate basierend auf Temperatur und Nährstoffkonzentration
+    growthRate = calculateGrowthRate(temperature, concentration) * timeScale; 
+    mutationRate = mutationProbability * timeScale / 100;
+    environmentMoisture = moisture; 
+
+    for (let i = 0; i < numMicrobes; i++) {
+        let angle = random(TWO_PI); 
+        let r = random(petriRadius);
+        let x = width / 2 + cos(angle) * r;
+        let y = height / 2 + sin(angle) * r;
+        microbes.push(new Microbe(x, y));
     }
 }
 

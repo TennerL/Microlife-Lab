@@ -28,7 +28,7 @@ timeOptions.forEach(option => {
 
 let temperatureSlider, nutrientSlider, humiditySelect;
 let microbes = [];
-let numMicrobes = 500;
+let numMicrobes = 5;
 let growthRate, mutationRate, environmentMoisture;
 let petriRadius;
 let fun = false; 

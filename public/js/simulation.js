@@ -81,6 +81,7 @@ function calculateGrowthRate(temperature, concentration) {
     return baseGrowthRate * nutrientFactor;
 }
 
+
 function setup() {
     let canvas = createCanvas(600, 600); 
     canvas.parent('canvas-container');
@@ -123,16 +124,23 @@ class Microbe {
         let newY = this.y + random(-speed, speed);
 
         let d = dist(newX, newY, width / 2, height / 2);
-        if (d < petriRadius) {
+        // Prüfen ob innerhalb Petrischale
+        if (d + this.size / 2 < petriRadius) {
             this.x = newX;
             this.y = newY;
         }
     }
 
     grow() {
-        this.size += this.growthFactor; 
-        if (random() < mutationRate) {
-            this.size *= random(0.95, 1.05); 
+        let newSize = this.size + this.growthFactor;
+        let d = dist(this.x, this.y, width / 2, height / 2);
+
+        if (d + newSize / 2 < petriRadius) {
+            this.size = newSize;
+        }
+
+        if (random() < mutationRate && d + newSize / 2 < petriRadius) {
+            this.size *= random(0.95, 1.05);
         }
     }
 

@@ -11,6 +11,8 @@ let concentration = selectedProject.concentration;
 let mutationProbability = selectedProject.mutationProbability;
 let microOrganism = selectedProject.microOrganism;
 let moisture = selectedProject.moisture;
+let countMicrobes = selectedProject.countMicrobes;
+
 
 const timeOptions = document.querySelectorAll('input[name="timeOptions"]');
 
@@ -28,7 +30,7 @@ timeOptions.forEach(option => {
 
 let temperatureSlider, nutrientSlider, humiditySelect;
 let microbes = [];
-let numMicrobes = 5;
+let numMicrobes = countMicrobes;
 let growthRate, mutationRate, environmentMoisture;
 let petriRadius;
 let fun = false; 
@@ -39,13 +41,6 @@ function setup() {
     
     petriRadius = (width - 50) / 2; 
     
-    // Simulationsparameter aus dem Projekt lesen
-    let temperature = selectedProject.temperature; // von 0 bis 100 °C
-    let concentration = selectedProject.concentration; // Nährstoffkonzentration --> muss noch eingebaut werden
-    let mutationProbability = selectedProject.mutationProbability; // Mutationswahrscheinlichkeit
-    let microOrganism = selectedProject.microOrganism; // Verschiedene Mikroorganismen
-    let moisture = selectedProject.moisture; // Feuchtigkeitsstufe --> Bewegung der Mikroben
-
     //growthRate = calculateGrowthRate(temperature) * timeScale; 
     mutationRate = mutationProbability * timeScale / 100;
     environmentMoisture = moisture; 

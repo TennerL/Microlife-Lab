@@ -40,6 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const mutationProbability = document.getElementById("slMutationRange").value;
         const moisture = document.querySelector('input[name="moistureOptions"]:checked').value;
         const microOrganism = document.getElementById("ddlMicroOrganisms").value;
+        const countMicrobes = document.getElementById("txtMicrobeCount").value;
 
         const projectData = {
             projectName: projectName,
@@ -47,7 +48,8 @@ document.addEventListener('DOMContentLoaded', function() {
             concentration: concentration,
             mutationProbability: mutationProbability,
             moisture: moisture,
-            microOrganism: microOrganism
+            microOrganism: microOrganism,
+            countMicrobes: countMicrobes
         };
 
         let savedProjects = localStorage.getItem("savedProjects");

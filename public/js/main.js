@@ -84,9 +84,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 projectBox.setAttribute("class", "projects col-md-3");
                 projectBox.setAttribute("id", "projectBox" + index);
 
+
                 projectBox.innerHTML = `
                     <div class="card bg-dark text-light projectCard">
-                        <img class="card-img-top" src="/images/coli.jpg">
+                    <img class="card-img-top" src="/images/${project.microOrganism}.jpg" style="height: 200px;">
                         <div class="card-body">
                             <p>${project.projectName}</p>
                             <button class="btn btn-danger" onclick="deleteProject(${index})"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3-fill" viewBox="0 0 16 16">

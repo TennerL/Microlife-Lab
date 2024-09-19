@@ -173,16 +173,6 @@ function setup() {
     
     petriRadius = (width - 50) / 2; 
     
-    // Simulationsparameter aus dem Projekt lesen
-    let temperature = selectedProject.temperature; // von 0 bis 100 °C
-    let concentration = selectedProject.concentration; // Nährstoffkonzentration in %
-    let mutationProbability = selectedProject.mutationProbability; // Mutationswahrscheinlichkeit farbänderung der Mikroben
-    let moisture = selectedProject.moisture; // Feuchtigkeitsstufe --> Bewegung der Mikroben
-    let microOrganism = selectedProject.microOrganism; // Verschiedene Mikroorganismen
-
-    // Wachstumsrate basierend auf Temperatur und Nährstoffkonzentration
-
-
     switch(microOrganism) {
         case "candida":
                 growthRate = calculateGrowthRateCandida(temperature, concentration) * timeScale; 

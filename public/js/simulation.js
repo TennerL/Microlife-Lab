@@ -6,28 +6,28 @@ let savedProjects = localStorage.getItem('savedProjects');
 savedProjects = JSON.parse(savedProjects);
 let selectedProject = savedProjects.find(project => project.projectName === projectName);
 
+let microbeHistory = [];
 let temperature = selectedProject.temperature;
 let concentration = selectedProject.concentration;
 let mutationProbability = selectedProject.mutationProbability;
 let microOrganism = selectedProject.microOrganism;
 let moisture = selectedProject.moisture;
 let countMicrobes = selectedProject.countMicrobes;
+let simulationTimeUnit = selectedProject.simulationTimeUnit;
+let simulationTimeRaw = selectedProject.simulationTime;
 
+let totalSimulationTime;
+switch(simulationTimeUnit) {
+    case "min": totalSimulationTime = simulationTimeRaw * 60;
+        break;
+    case "h": totalSimulationTime = simulationTimeRaw * 3600;
+        break;
+    case "d": totalSimulationTime = simulationTimeRaw * 86400;
+        break;
+    default:
+}
 
 const timeOptions = document.querySelectorAll('input[name="timeOptions"]');
-
-////////////////////////
-// Beginn Simulation ///
-////////////////////////
-
-let timeScale = 0.1;
-timeOptions.forEach(option => {
-    option.addEventListener('change', function(){
-        timeScale = document.querySelector('input[name="timeOptions"]:checked').value;
-        console.log(timeScale);
-    });
-});
-
 let temperatureSlider, nutrientSlider, humiditySelect;
 let microbes = [];
 let numMicrobes = countMicrobes;
@@ -35,13 +35,47 @@ let growthRate, mutationRate, environmentMoisture;
 let petriRadius;
 let fun = false; 
 
+///////////////////////
+// Beginn Simulation //
+///////////////////////
+
+let timeScale = 0.1; 
+let simulationTime = 0;
+let simulationActive = true; 
+
+timeOptions.forEach(option => {
+    option.addEventListener('change', function(){
+        timeScale = parseFloat(document.querySelector('input[name="timeOptions"]:checked').value);
+        console.log("Aktuelle timeScale: " + timeScale);
+    });
+});
+
 function setup() {
     let canvas = createCanvas(600, 600); 
     canvas.parent('canvas-container');
+    canvas.style.borderRadius = '50%';
     
     petriRadius = (width - 50) / 2; 
     
-    //growthRate = calculateGrowthRate(temperature) * timeScale; 
+    switch(microOrganism) {
+        case "candida":
+                growthRate = calculateGrowthRateCandida(temperature, concentration) * timeScale; 
+            break;
+        case "aspergillus":
+                growthRate = calculateGrowthRateAspergillusNiger(temperature, concentration) * timeScale; 
+            break;
+        case "penicillium":
+                growthRate = calculateGrowthRatePenicilliumNotatum(temperature, concentration) * timeScale; 
+            break;
+        case "ecoli":
+                growthRate = calculateGrowthRateEscherichiaColi(temperature, concentration) * timeScale; 
+            break;
+        case "staphylococcus":
+                growthRate = calculateGrowthRateStaphylococcusAureus(temperature, concentration) * timeScale; 
+            break;
+        default:
+    }
+    
     mutationRate = mutationProbability * timeScale / 100;
     environmentMoisture = moisture; 
 
@@ -165,51 +199,12 @@ function calculateGrowthRateAspergillusNiger(temperature, concentration) {
     return baseGrowthRate * nutrientFactor;
 }
 
-
-function setup() {
-    let canvas = createCanvas(600, 600); 
-    canvas.parent('canvas-container');
-    canvas.style.borderRadius = '50%';
-    
-    petriRadius = (width - 50) / 2; 
-    
-    switch(microOrganism) {
-        case "candida":
-                growthRate = calculateGrowthRateCandida(temperature, concentration) * timeScale; 
-            break;
-        case "aspergillus":
-                growthRate = calculateGrowthRateAspergillusNiger(temperature, concentration) * timeScale; 
-            break;
-        case "penicillium":
-                growthRate = calculateGrowthRatePenicilliumNotatum(temperature, concentration) * timeScale; 
-            break;
-        case "ecoli":
-                growthRate = calculateGrowthRateEscherichiaColi(temperature, concentration) * timeScale; 
-            break;
-        case "staphylococcus":
-                growthRate = calculateGrowthRateStaphylococcusAureus(temperature, concentration) * timeScale; 
-            break;
-        default:
-    }
-    
-    mutationRate = mutationProbability * timeScale / 100;
-    environmentMoisture = moisture; 
-
-    for (let i = 0; i < numMicrobes; i++) {
-        let angle = random(TWO_PI); 
-        let r = random(petriRadius);
-        let x = width / 2 + cos(angle) * r;
-        let y = height / 2 + sin(angle) * r;
-        microbes.push(new Microbe(x, y));
-    }
-}
-
 class Microbe {
     constructor(x, y) {
         this.x = x;
         this.y = y;
         this.size = random(0, 5); 
-        this.growthFactor = growthRate;
+        this.growthFactor = growthRate * timeScale; 
         this.color = color(100, 255, 100, 150);
     }
 
@@ -219,7 +214,7 @@ class Microbe {
         let newY = this.y + random(-speed, speed);
 
         let d = dist(newX, newY, width / 2, height / 2);
-        // Prüfen ob innerhalb Petrischale
+
         if (d + this.size / 2 < petriRadius) {
             this.x = newX;
             this.y = newY;
@@ -227,14 +222,17 @@ class Microbe {
     }
 
     grow() {
+
+        this.growthFactor = growthRate * timeScale; 
         let newSize = this.size + this.growthFactor;
+
         let d = dist(this.x, this.y, width / 2, height / 2);
 
         if (d + newSize / 2 < petriRadius) {
             this.size = newSize;
         }
 
-        if (mutationRate > 0 && random() < mutationRate && d + newSize / 2 < petriRadius) {
+        if (mutationRate > 0 && random() < (mutationRate * timeScale)) {
             this.size *= random(0.95, 1.05);
             this.color = color(
                 constrain(this.color.levels[0] + random(-10, 10), 100, 255),
@@ -257,6 +255,20 @@ class Microbe {
 }
 
 function draw() {
+    
+    if (!simulationActive) {
+        return;
+    }
+
+    simulationTime += timeScale * 10 / 60; 
+    if (simulationTime >= totalSimulationTime) {
+        simulationActive = false; 
+        console.log("Simulation beendet nach " + totalSimulationTime + " Minuten!");
+        return; 
+    }
+    
+    console.log(simulationTime);
+
     stroke(255);
     fill(50); 
     ellipse(width / 2, height / 2, width - 50, height - 50); 
@@ -266,6 +278,17 @@ function draw() {
         microbes[i].grow();
         microbes[i].display();
     }
+    logMicrobeData();
+}
+
+function logMicrobeData() {
+    let microbeData = microbes.map(microbe => ({
+        x: microbe.x,
+        y: microbe.y, 
+        size: microbe.size,
+        mutationOccurred: random() < mutationRate
+    }));
+    microbeHistory.push(microbeData);
 }
 
 if (selectedProject.projectName === "Party") {

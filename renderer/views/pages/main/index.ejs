@@ -160,7 +160,24 @@
           </div>
           <div class="col-md-1">
             <label for="txtCountMicrobes" class="form-label">Anfangsanzahl</label>
-            <input type="number" id="txtMicrobeCount" class="form-control" value="1" min="0" max="100">
+            <input type="number" id="txtMicrobeCount" class="form-control" value="1" min="0" max="100" />
+          </div>
+        </div>
+
+        <br> 
+        
+        <div class="row">
+          <div class="col-md-2">
+            <label for="txtSimulationDuration" class="form-label">Simulationsdauer</label>
+            <input type="number" id="txtSimulationDuration" class="form-control" value="1" min="0" max="1000000000" />
+          </div>
+          <div class="col-md-2">
+            <label for="ddlTimeUnit" class="form-label">Zeiteinheit</label>
+            <select id="ddlTimeUnit" class="form-control">
+              <option value="min">Minute/n</option>
+              <option value="h">Stunde/n</option>
+              <option value="d">Tag/e</option>
+            </select>
           </div>
         </div>
 

@@ -52,9 +52,7 @@ timeOptions.forEach(option => {
 
 function setup() {
     let canvas = createCanvas(600, 600); 
-    canvas.parent('canvas-container');
-    canvas.style.borderRadius = '50%';
-    
+    canvas.parent('canvas-container');    
     petriRadius = (width - 50) / 2; 
     
     switch(microOrganism) {
@@ -206,6 +204,7 @@ class Microbe {
         this.size = random(0, 5); 
         this.growthFactor = growthRate * timeScale; 
         this.color = color(100, 255, 100, 150);
+        this.maxSize = 100;
     }
 
     move() {
@@ -219,6 +218,8 @@ class Microbe {
             this.x = newX;
             this.y = newY;
         }
+
+
     }
 
     grow() {
@@ -228,12 +229,16 @@ class Microbe {
 
         let d = dist(this.x, this.y, width / 2, height / 2);
 
-        if (d + newSize / 2 < petriRadius) {
+        if (d + newSize / 2 < petriRadius && newSize <= this.maxSize) {
             this.size = newSize;
+        } else {
+            this.growthFactor = 0; 
         }
 
         if (mutationRate > 0 && random() < (mutationRate * timeScale)) {
+            
             this.size *= random(0.95, 1.05);
+
             this.color = color(
                 constrain(this.color.levels[0] + random(-10, 10), 100, 255),
                 constrain(this.color.levels[1] + random(-10, 10), 100, 255),
@@ -251,6 +256,7 @@ class Microbe {
         }
         noStroke();
         ellipse(this.x, this.y, this.size, this.size);
+
     }
 }
 
@@ -278,6 +284,7 @@ function draw() {
         microbes[i].grow();
         microbes[i].display();
     }
+
     logMicrobeData();
 }
 

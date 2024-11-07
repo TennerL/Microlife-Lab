@@ -23,4 +23,8 @@ app.get('/simulation', (req, res) => {
   res.render('../views/pages/simulation/index.ejs', {title: 'Simulation'})
 })
 
+app.get('/chart', (req, res) => {
+  res.render('../views/pages/chart/index.ejs', {title: 'Chart'})
+})
+
 export default app;

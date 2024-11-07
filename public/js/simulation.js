@@ -1,3 +1,5 @@
+const { json } = require("express");
+
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
 let projectName = urlParams.get('projectName');
@@ -34,6 +36,8 @@ let numMicrobes = countMicrobes;
 let growthRate, mutationRate, environmentMoisture;
 let petriRadius;
 let fun = false; 
+const chartButton = document.getElementById('btnChart');
+
 
 ///////////////////////
 // Beginn Simulation //
@@ -260,20 +264,29 @@ class Microbe {
     }
 }
 
+let lastLoggedHour = 0; // Speichert die letzte geloggte Simulationszeit in Stunden
+
 function draw() {
-    
     if (!simulationActive) {
         return;
     }
 
     simulationTime += timeScale * 10 / 60; 
+    
     if (simulationTime >= totalSimulationTime) {
         simulationActive = false; 
+        outputJSON();
         console.log("Simulation beendet nach " + totalSimulationTime + " Minuten!");
         return; 
     }
     
-    console.log(simulationTime);
+    // Log nur jede volle Stunde
+    let currentHour = Math.floor(simulationTime / 3600); // 3600 Sekunden = 1 Stunde
+    if (currentHour > lastLoggedHour) {
+        console.log("Simulationszeit: " + currentHour + " Stunden");
+        logMicrobeData(currentHour);
+        lastLoggedHour = currentHour;
+    }
 
     stroke(255);
     fill(50); 
@@ -284,18 +297,44 @@ function draw() {
         microbes[i].grow();
         microbes[i].display();
     }
-
-    logMicrobeData();
 }
+   
+function logMicrobeData(currentHour) {
 
-function logMicrobeData() {
     let microbeData = microbes.map(microbe => ({
-        x: microbe.x,
-        y: microbe.y, 
-        size: microbe.size,
-        mutationOccurred: random() < mutationRate
+        y: currentHour,
+        x: microbe.size,
     }));
     microbeHistory.push(microbeData);
+}
+
+function calculateAverages() {
+    let averages = microbeHistory.map((secondData, index) => {
+        let totalSize = secondData.reduce((sum, microbe) => sum + microbe.x, 0);
+        let avgSize = totalSize / secondData.length;
+        return { x: index + 1, y: avgSize };
+    });
+    return averages;
+}
+
+function outputJSON() {
+    chartButton.disabled = false;
+    chartButton.classList.add("active");
+    chartButton.addEventListener("click", function(){
+        window.location.href = "/chart?projectName=" + projectName;
+    });
+
+    let averages = calculateAverages();
+
+    if (selectedProject) {
+        if (!selectedProject.simulations) {
+            selectedProject.simulations = []; // Initialisiere simulations, falls es noch nicht existiert
+        }
+
+        selectedProject.simulations = [{ x: 0, y: 0 }, ...averages];  // Füge averages nach { x: 0, y: 0 } hinzu
+
+        localStorage.setItem('savedProjects', JSON.stringify(savedProjects));
+    }
 }
 
 if (selectedProject.projectName === "Party") {

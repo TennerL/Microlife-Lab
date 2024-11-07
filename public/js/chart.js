@@ -7,15 +7,13 @@ document.addEventListener('DOMContentLoaded', function() {
     let savedProjects = localStorage.getItem('savedProjects');
     savedProjects = JSON.parse(savedProjects);
     let selectedProject = savedProjects.find(project => project.projectName === projectName);
-
-    console.log(selectedProject.simulations)
     let xData = selectedProject.simulations.map(sim => sim.x);
     let yData = selectedProject.simulations.map(sim => sim.y);
 
     var myChart = echarts.init(document.getElementById('main'));
       var option = {
         title: {
-          text: "Abschlussbericht für " + selectedProject.projectName
+          text: "Abschlussbericht für " + selectedProject.projectName + " | " + selectedProject.microOrganism
         },
         tooltip: {},
         xAxis: {
@@ -30,6 +28,5 @@ document.addEventListener('DOMContentLoaded', function() {
           }
         ]
       };
-
       myChart.setOption(option);
 });

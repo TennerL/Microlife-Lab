@@ -1,3 +1,4 @@
+
 const { json } = require("express");
 
 const queryString = window.location.search;
@@ -13,15 +14,13 @@ let temperature = selectedProject.temperature;
 let concentration = selectedProject.concentration;
 let mutationProbability = selectedProject.mutationProbability;
 let microOrganism = selectedProject.microOrganism;
-let moisture = selectedProject.moisture;
+
 let countMicrobes = selectedProject.countMicrobes;
 let simulationTimeUnit = selectedProject.simulationTimeUnit;
 let simulationTimeRaw = selectedProject.simulationTime;
 
 let totalSimulationTime;
 switch(simulationTimeUnit) {
-    case "min": totalSimulationTime = simulationTimeRaw * 60;
-        break;
     case "h": totalSimulationTime = simulationTimeRaw * 3600;
         break;
     case "d": totalSimulationTime = simulationTimeRaw * 86400;
@@ -30,29 +29,85 @@ switch(simulationTimeUnit) {
 }
 
 const timeOptions = document.querySelectorAll('input[name="timeOptions"]');
-let temperatureSlider, nutrientSlider, humiditySelect;
 let microbes = [];
 let numMicrobes = countMicrobes;
-let growthRate, mutationRate, environmentMoisture;
+let growthRate, mutationRate
 let petriRadius;
 let fun = false; 
-const chartButton = document.getElementById('btnChart');
-
 
 ///////////////////////
 // Beginn Simulation //
 ///////////////////////
 
-let timeScale = 0.1; 
+let timeScale = 1; 
 let simulationTime = 0;
 let simulationActive = true; 
 
-timeOptions.forEach(option => {
-    option.addEventListener('change', function(){
-        timeScale = parseFloat(document.querySelector('input[name="timeOptions"]:checked').value);
-        console.log("Aktuelle timeScale: " + timeScale);
-    });
+// Logik für die Zeitleiste 
+
+document.addEventListener("DOMContentLoaded", (event) => {
+
+let interval;
+let currentIndex = 0;
+let cells;
+
+let timescaleDIV = document.getElementById('graphContainer');
+
+let timeInMinutes = totalSimulationTime / 60;
+let timeInHours = timeInMinutes / 60;
+
+timescaleDIV.innerHTML = "";
+currentIndex = 0; 
+
+
+if (!isNaN(timeInHours) && timeInHours > 0) {
+    let graph = "<table>";
+    graph += "<tr>";
+    for (let i = 0; i < timeInHours; i++) {
+        graph += `<td><span class="marker">|</span></td>`;
+    }
+    graph += "</tr>";
+    graph += "</table>";
+    timescaleDIV.innerHTML = graph;
+    cells = timescaleDIV.querySelectorAll("td");
+}
+
+const btnStart = document.getElementById("btnStart");
+
+btnStart.addEventListener("click", function() {
+    if (!cells || cells.length === 0) {
+        alert("Zeitleiste nicht erstellt. Bitte zuerst auf 'Go' klicken.");
+        return;
+    }
+
+    interval = setInterval(() => {
+        if (currentIndex > 0) {
+            cells[currentIndex - 1].innerHTML = `<span class="marker">|</span>`;
+        }
+        if (currentIndex < cells.length) {
+            cells[currentIndex].innerHTML = `<span class="cursor"></span>`;
+            currentIndex++;
+            
+            simulationTime += 3600
+            updateSimulation();
+
+        } else {
+            clearInterval(interval);
+            simulationActive = false;
+            console.log("Simulation beendet")
+        }
+    }, 1000);
 });
+
+});
+
+function updateSimulation() {
+    for (let i = 0; i < microbes.length; i++) {
+        microbes[i].grow();
+    }
+    simulationTime += timeScale * 10; 
+}
+
 
 function setup() {
     let canvas = createCanvas(600, 600); 
@@ -79,11 +134,10 @@ function setup() {
     }
     
     mutationRate = mutationProbability * timeScale / 100;
-    environmentMoisture = moisture; 
-
+   
     for (let i = 0; i < numMicrobes; i++) {
         let angle = random(TWO_PI); 
-        let r = random(petriRadius);
+        let r = random(petriRadius - 100 / 2);
         let x = width / 2 + cos(angle) * r;
         let y = height / 2 + sin(angle) * r;
         microbes.push(new Microbe(x, y));
@@ -208,50 +262,38 @@ class Microbe {
         this.size = random(0, 5); 
         this.growthFactor = growthRate * timeScale; 
         this.color = color(100, 255, 100, 150);
-        this.maxSize = 100;
-    }
-
-    move() {
-        let speed = map(environmentMoisture, 0, 2, 0.1, 1) * timeScale;
-        let newX = this.x + random(-speed, speed);
-        let newY = this.y + random(-speed, speed);
-
-        let d = dist(newX, newY, width / 2, height / 2);
-
-        if (d + this.size / 2 < petriRadius) {
-            this.x = newX;
-            this.y = newY;
-        }
-
-
+        this.maxSize = 80;
     }
 
     grow() {
-
-        this.growthFactor = growthRate * timeScale; 
+        this.growthFactor = growthRate * timeScale;
+    
         let newSize = this.size + this.growthFactor;
-
-        let d = dist(this.x, this.y, width / 2, height / 2);
-
-        if (d + newSize / 2 < petriRadius && newSize <= this.maxSize) {
+    
+        let distanceFromCenter = dist(this.x, this.y, width / 2, height / 2);
+    
+        if (distanceFromCenter + newSize / 2 < petriRadius && newSize <= this.maxSize) {
             this.size = newSize;
         } else {
-            this.growthFactor = 0; 
+            // Stoppe das Wachstum, wenn die Bedingungen nicht erfüllt sind
+            this.growthFactor = 0;
         }
-
-        if (mutationRate > 0 && random() < (mutationRate * timeScale)) {
-            
-            this.size *= random(0.95, 1.05);
-
+    
+        // Mutation: Wachstumsvariationen und Farbänderungen
+        if (mutationRate > 0 && random() < mutationRate) {
+            // Mutation: Leichte Variationen in der Größe
+            this.size *= random(0.98, 1.02); // Kleinerer Spielraum für Mutation, um übermäßige Ausreißer zu vermeiden
+    
+            // Mutation: Farbänderungen
             this.color = color(
-                constrain(this.color.levels[0] + random(-10, 10), 100, 255),
-                constrain(this.color.levels[1] + random(-10, 10), 100, 255),
-                constrain(this.color.levels[2] + random(-10, 10), 100, 255),
+                constrain(this.color.levels[0] + random(-15, 15), 100, 255), // Rotanteil
+                constrain(this.color.levels[1] + random(-15, 15), 100, 255), // Grünanteil
+                constrain(this.color.levels[2] + random(-15, 15), 100, 255), // Blauanteil
                 150
             );
         }
     }
-
+    
     display() {
         if (fun) {
             fill(random(255), random(255), random(255), 150);
@@ -260,11 +302,10 @@ class Microbe {
         }
         noStroke();
         ellipse(this.x, this.y, this.size, this.size);
-
     }
 }
 
-let lastLoggedHour = 0; // Speichert die letzte geloggte Simulationszeit in Stunden
+let lastLoggedHour = 0; 
 
 function draw() {
     if (!simulationActive) {
@@ -293,10 +334,10 @@ function draw() {
     ellipse(width / 2, height / 2, width - 50, height - 50); 
 
     for (let i = 0; i < microbes.length; i++) {
-        microbes[i].move();
         microbes[i].grow();
         microbes[i].display();
     }
+
 }
    
 function logMicrobeData(currentHour) {
@@ -318,6 +359,8 @@ function calculateAverages() {
 }
 
 function outputJSON() {
+
+    const chartButton = document.getElementById('btnChart');
     chartButton.disabled = false;
     chartButton.classList.add("active");
     chartButton.addEventListener("click", function(){
@@ -328,7 +371,7 @@ function outputJSON() {
 
     if (selectedProject) {
         if (!selectedProject.simulations) {
-            selectedProject.simulations = []; // Initialisiere simulations, falls es noch nicht existiert
+            selectedProject.simulations = []; 
         }
 
         selectedProject.simulations = [{ x: 0, y: 0 }, ...averages];  // Füge averages nach { x: 0, y: 0 } hinzu
@@ -340,3 +383,4 @@ function outputJSON() {
 if (selectedProject.projectName === "Party") {
     fun = true;
 }
+

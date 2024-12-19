@@ -22,11 +22,44 @@
     div {
         margin: 10px;
     }
-    .timeContros{
-    position: absolute;
-    right: 10vh;
-    width: 50vh;
-    }
+      #graphContainer {
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        td {
+            text-align: center;
+            position: relative;
+            width: 50px; 
+        }
+        td::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: rgb(255, 255, 255); 
+            z-index: -1;
+        }
+        .marker {
+            position: relative;
+            z-index: 1;
+        }
+        .controls {
+            margin: auto;
+            display: block;
+        }
+        .cursor {
+            background-color: rgb(255, 255, 255); 
+            width: 5%; 
+            height: 20px; 
+            display: block;
+            margin: auto;
+            border-radius: 5px; 
+        }
   </style>
 </head>
 <body class="container bg-dark text-light">
@@ -37,28 +70,30 @@
 
 
 <main>
-  <div class="row timeContros">
-    <div class="col-sm-11" style="text-align: right;">
-    <div class="btn-group btn-group-toggle" data-toggle="buttons">
-      <label class="btn btn-primary">
-        <input type="radio" name="timeOptions" value="0.1" autocomplete="off" checked> <b>1x</b></input>
-      </label>
-      <label class="btn btn-primary">
-        <input type="radio" name="timeOptions" value="0.2" autocomplete="off"> <b>2x</b></input>
-      </label>
-      <label class="btn btn-primary">
-        <input type="radio" name="timeOptions" value="1000" autocomplete="off"> <b>10x</b></input>
-      </label>
-    </div>
+  
 
-    <button id="btnChart" type="button" class="btn btn-lg btn-primary" disabled>Chart</button>
+  
   </div>
 </div>
 
 
 <script src="/js/simulation.js"></script>
-    <div id="canvas-container"></div>
-</main>
+
+
+<button type="button" class="btn btn-lg btn-primary" id="btnStart">⏵︎</button>
+<button type="button" class="btn btn-lg btn-primary" id="btnStop">⏸︎</button>
+<button id="btnChart" type="button" class="btn btn-lg btn-primary" disabled>Chart</button>
+
+<div id="graphContainer">
+  
+</div>
+
+  <div id="canvas-container"></div>
+
+
+  </main>
+
+
 
 <footer>
   <%- include('../../common/footer'); %>

@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const temperature = document.getElementById("slTemperatureRange").value;
         const concentration = document.getElementById("slConcentrationRange").value;
         const mutationProbability = document.getElementById("slMutationRange").value;
-        const moisture = document.querySelector('input[name="moistureOptions"]:checked').value;
+        //const moisture = document.querySelector('input[name="moistureOptions"]:checked').value;
         const microOrganism = document.getElementById("ddlMicroOrganisms").value;
         const countMicrobes = document.getElementById("txtMicrobeCount").value;
         const simulationTimeUnit = document.getElementById("ddlTimeUnit").value;
@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function() {
             temperature: temperature,
             concentration: concentration,
             mutationProbability: mutationProbability,
-            moisture: moisture,
+            //moisture: moisture,
             microOrganism: microOrganism,
             countMicrobes: countMicrobes,
             simulationTimeUnit: simulationTimeUnit,

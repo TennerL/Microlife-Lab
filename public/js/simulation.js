@@ -14,6 +14,8 @@ let temperature = selectedProject.temperature;
 let concentration = selectedProject.concentration;
 let mutationProbability = selectedProject.mutationProbability;
 let microOrganism = selectedProject.microOrganism;
+let ph = selectedProject.ph;
+let moisture = selectedProject.moisture;
 
 let countMicrobes = selectedProject.countMicrobes;
 let simulationTimeUnit = selectedProject.simulationTimeUnit;
@@ -39,45 +41,37 @@ let fun = false;
 // Beginn Simulation //
 ///////////////////////
 
-let timeScale = 1; 
-let simulationTime = 0;
-let simulationActive = true; 
-
-// Logik für die Zeitleiste 
-
-document.addEventListener("DOMContentLoaded", (event) => {
-
-let interval;
-let currentIndex = 0;
-let cells;
-
-let timescaleDIV = document.getElementById('graphContainer');
-
 let timeInMinutes = totalSimulationTime / 60;
 let timeInHours = timeInMinutes / 60;
 
-timescaleDIV.innerHTML = "";
-currentIndex = 0; 
+let timeScale = 1; 
+
+let simulationTime = 0;
+let simulationActive = true; 
 
 
-if (!isNaN(timeInHours) && timeInHours > 0) {
-    let graph = "<table>";
-    graph += "<tr>";
-    for (let i = 0; i < timeInHours; i++) {
-        graph += `<td><span class="marker">|</span></td>`;
-    }
-    graph += "</tr>";
-    graph += "</table>";
-    timescaleDIV.innerHTML = graph;
-    cells = timescaleDIV.querySelectorAll("td");
-}
+// Logik für die Zeitleiste 
+document.addEventListener("DOMContentLoaded", (event) => {
 
-const btnStart = document.getElementById("btnStart");
+    let interval;
+    let currentIndex = 0;
+    let cells;
+    let timescaleDIV = document.getElementById('graphContainer');
 
-btnStart.addEventListener("click", function() {
-    if (!cells || cells.length === 0) {
-        alert("Zeitleiste nicht erstellt. Bitte zuerst auf 'Go' klicken.");
-        return;
+    timescaleDIV.innerHTML = "";
+    currentIndex = 0; 
+
+
+    if (!isNaN(timeInHours) && timeInHours > 0) {
+        let graph = "<table>";
+        graph += "<tr>";
+        for (let i = 0; i < timeInHours; i++) {
+            graph += `<td><span class="marker">|</span></td>`;
+        }
+        graph += "</tr>";
+        graph += "</table>";
+        timescaleDIV.innerHTML = graph;
+        cells = timescaleDIV.querySelectorAll("td");
     }
 
     interval = setInterval(() => {
@@ -97,8 +91,6 @@ btnStart.addEventListener("click", function() {
             console.log("Simulation beendet")
         }
     }, 1000);
-});
-
 });
 
 function updateSimulation() {
@@ -134,6 +126,8 @@ function setup() {
     }
     
     mutationRate = mutationProbability * timeScale / 100;
+    deathRate = 0.001 * timeScale; 
+    divisionRate = 0.005 * timeScale;
    
     for (let i = 0; i < numMicrobes; i++) {
         let angle = random(TWO_PI); 
@@ -255,6 +249,49 @@ function calculateGrowthRateAspergillusNiger(temperature, concentration) {
     return baseGrowthRate * nutrientFactor;
 }
 
+let lastLoggedHour = 0; 
+function draw() {
+    if (!simulationActive) {
+        return;
+    }
+
+    simulationTime += timeScale * 10 / 60; 
+    let currentHour = Math.floor(simulationTime / 3600); 
+
+    if (simulationTime >= totalSimulationTime) {
+        simulationActive = false; 
+        logMicrobeData(microbes,currentHour, simulationActive);
+        return; 
+    } 
+
+    if (currentHour > lastLoggedHour) {
+        logMicrobeData(microbes, currentHour, simulationActive);
+        lastLoggedHour = currentHour;
+    }
+  
+
+    stroke(255);
+    fill(50); 
+    ellipse(width / 2, height / 2, width - 50, height - 50); 
+
+    for (let i = 0; i < microbes.length; i++) {
+        microbes[i].grow();
+        microbes[i].display();
+    }
+    updateSimulation(); 
+}
+
+const calculateDeathRate = (age, crowding) => {
+    let baseDeathRate = 0.0001 * (age/500);
+    let crowdingFactor = (crowding / 2000) * 0.001;
+    let tempStress = 0;
+    if (temperature < 15 || temperature > 30) {
+        tempStress = 0.0002;
+    }
+    return baseDeathRate + crowdingFactor + tempStress;
+}
+
+
 class Microbe {
     constructor(x, y) {
         this.x = x;
@@ -263,36 +300,56 @@ class Microbe {
         this.growthFactor = growthRate * timeScale; 
         this.color = color(100, 255, 100, 150);
         this.maxSize = 80;
+        this.age = 0;
     }
 
     grow() {
         this.growthFactor = growthRate * timeScale;
-    
         let newSize = this.size + this.growthFactor;
-    
         let distanceFromCenter = dist(this.x, this.y, width / 2, height / 2);
-    
+        this.age++;
+        
+        const deathProbability = calculateDeathRate(
+            this.age,
+            microbes.length
+        );
+
+        if (random() < deathProbability) {
+            return false; 
+        }     
+
+        const  capacityFactor = 1 - (microbes.length / 2000);
+        this.growthFactor *= capacityFactor;
+
+        if (this.age > 100 && this.size > 20 && random() < divisionRate * capacityFactor){
+            this.divide();
+        }
+
         if (distanceFromCenter + newSize / 2 < petriRadius && newSize <= this.maxSize) {
             this.size = newSize;
         } else {
-            // Stoppe das Wachstum, wenn die Bedingungen nicht erfüllt sind
             this.growthFactor = 0;
         }
     
-        // Mutation: Wachstumsvariationen und Farbänderungen
         if (mutationRate > 0 && random() < mutationRate) {
-            // Mutation: Leichte Variationen in der Größe
-            this.size *= random(0.98, 1.02); // Kleinerer Spielraum für Mutation, um übermäßige Ausreißer zu vermeiden
-    
-            // Mutation: Farbänderungen
-            this.color = color(
-                constrain(this.color.levels[0] + random(-15, 15), 100, 255), // Rotanteil
-                constrain(this.color.levels[1] + random(-15, 15), 100, 255), // Grünanteil
-                constrain(this.color.levels[2] + random(-15, 15), 100, 255), // Blauanteil
-                150
-            );
+            this.size *= random(0.98, 1.02);
         }
+        return true; 
     }
+
+    divide() {
+        if (microbes.length < 2000) { 
+          let angle = random(TWO_PI);
+          let newX = this.x + cos(angle) * this.size;
+          let newY = this.y + sin(angle) * this.size;
+          
+          let distanceFromCenter = dist(newX, newY, width / 2, height / 2);
+          if (distanceFromCenter < petriRadius) {
+            microbes.push(new Microbe(newX, newY));
+            this.size *= 0.7;
+          }
+        }
+      }
     
     display() {
         if (fun) {
@@ -305,82 +362,66 @@ class Microbe {
     }
 }
 
-let lastLoggedHour = 0; 
+function updateSimulation() {
+    for (let i = microbes.length - 1; i >= 0; i--) {
+      if (!microbes[i].grow()) {
+        microbes.splice(i, 1); 
+      }
+    }
+    simulationTime += timeScale * 10;
+  }
 
-function draw() {
+
+class DataBuilder {
+    constructor() {
+        this.data = [];
+    }
+
+    addPoint(count, hour, avgSize) {
+        this.data.push({
+            point: {
+                count: count,
+                x: hour, 
+                y: avgSize 
+            }
+        });
+    }
+    toJSON() {
+        return JSON.stringify({ Data: this.data }, null, 2);
+    }
+    printFinalResult() {
+        return this.toJSON();
+    }
+}
+
+
+var totalSimHours = totalSimulationTime / 60 / 60; 
+const builder = new DataBuilder();
+
+function logMicrobeData(microbes, currentHour, simulationActive) {
+
+    const averageSize = microbes
+        .map (microbe => microbe.size)
+        .reduce((sum, size) => sum + size, 0)
+        / microbes.length;
+    builder.addPoint(microbes.length,currentHour, averageSize);
+    
     if (!simulationActive) {
-        return;
-    }
+        const chartButton = document.getElementById("btnChart");
+        chartButton.disabled = false; 
+        chartButton.classList.add("active");
+        chartButton.addEventListener("click", function() {
+            window.location.href = "/chart?projectName=" + projectName;
+        });
 
-    simulationTime += timeScale * 10 / 60; 
-    
-    if (simulationTime >= totalSimulationTime) {
-        simulationActive = false; 
-        outputJSON();
-        console.log("Simulation beendet nach " + totalSimulationTime + " Minuten!");
-        return; 
-    }
-    
-    // Log nur jede volle Stunde
-    let currentHour = Math.floor(simulationTime / 3600); // 3600 Sekunden = 1 Stunde
-    if (currentHour > lastLoggedHour) {
-        console.log("Simulationszeit: " + currentHour + " Stunden");
-        logMicrobeData(currentHour);
-        lastLoggedHour = currentHour;
-    }
+        let data = builder.toJSON();  
 
-    stroke(255);
-    fill(50); 
-    ellipse(width / 2, height / 2, width - 50, height - 50); 
-
-    for (let i = 0; i < microbes.length; i++) {
-        microbes[i].grow();
-        microbes[i].display();
-    }
-
-}
-   
-function logMicrobeData(currentHour) {
-
-    let microbeData = microbes.map(microbe => ({
-        y: currentHour,
-        x: microbe.size,
-    }));
-    microbeHistory.push(microbeData);
-}
-
-function calculateAverages() {
-    let averages = microbeHistory.map((secondData, index) => {
-        let totalSize = secondData.reduce((sum, microbe) => sum + microbe.x, 0);
-        let avgSize = totalSize / secondData.length;
-        return { x: index + 1, y: avgSize };
-    });
-    return averages;
-}
-
-function outputJSON() {
-
-    const chartButton = document.getElementById('btnChart');
-    chartButton.disabled = false;
-    chartButton.classList.add("active");
-    chartButton.addEventListener("click", function(){
-        window.location.href = "/chart?projectName=" + projectName;
-    });
-
-    let averages = calculateAverages();
-
-    if (selectedProject) {
-        if (!selectedProject.simulations) {
-            selectedProject.simulations = []; 
+        if (selectedProject) {
+            if (!selectedProject.simulations) {
+                selectedProject.simulations = []; 
+            }
+            selectedProject.simulations = [{point: { count: countMicrobes, x: 0, y: 0}}, ...JSON.parse(data).Data]; 
+            localStorage.setItem('savedProjects', JSON.stringify(savedProjects));  
         }
-
-        selectedProject.simulations = [{ x: 0, y: 0 }, ...averages];  // Füge averages nach { x: 0, y: 0 } hinzu
-
-        localStorage.setItem('savedProjects', JSON.stringify(savedProjects));
     }
 }
-
-if (selectedProject.projectName === "Party") {
-    fun = true;
-}
-

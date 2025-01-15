@@ -107,39 +107,46 @@
     
           <!-- Concentration Slider -->
           <div class="col-md-12">
-            <label for="lblConcentration" class="form-label">Nährstoffkonzentration (%)</label><br>
+            <label for="lblConcentration" class="form-label">Nährstoffgehalt (%)</label><br>
             <div class="slider-container">
               <input type="range" class="form-range slNewProject" min="0" max="100" id="slConcentrationRange">
               <input type="text" id="txtConcentrationValue" class="form-control txtSlValue" value="0" readonly>
             </div>
           </div>
-    
-          <!-- Mutation Probability Slider -->
+
+          <!-- Luftfeuchtigkeit -->
           <div class="col-md-12">
+            <label for="lblMoisture" class="form-label">Luftfeuchtigkeit (%)</label><br>
+            <div class="slider-container">
+              <input type="range" class="form-range slNewProject" min="0" max="100" id="slMoistureRange">
+              <input type="text" id="txtMoistureValue" class="form-control txtSlValue" value="0" readonly>
+            </div>
+          </div>
+
+          <!-- PH-Wert -->
+          <div class="col-md-12">
+            <label for="lblPH" class="form-label">PH-Wert (pH)</label><br>
+            <div class="slider-container">
+              <input type="range" class="form-range slNewProject" min="0" max="14" id="slPhRange">
+              <div id="phIndicator" style="width: 113px; height:38px; border: 1px solid; border-radius: 0.375rem; margin: 10px; background-color: black; padding-top: 7px; padding-left:10px;">
+                <p id="phValue" style="color:black;">7</p>
+              </div>
+            </div>
+          </div>
+
+
+
+          <!-- Mutation Probability Slider -->
+          <!-- <div class="col-md-12">
             <label for="lblMutationRange" class="form-label">Mutationswarscheinlichkeit (%)</label><br>
             <div class="slider-container">
               <input type="range" class="form-range slNewProject" min="0" max="100" id="slMutationRange">
               <input type="text" id="txtMutationValue" class="form-control txtSlValue" value="0" readonly>
             </div>
-          </div>
+          </div> -->
+
         </div>
         <br>
-        <!-- <div class="row">
-          <div class="col-md-2">
-            <label for="lblMoistureBtn" class="form-label">Feuchtigkeitsgrad</label>
-            <div class="btn-group btn-group-toggle" data-toggle="buttons">
-              <label class="btn btn-secondary">
-                <input type="radio" name="moistureOptions" value="0" autocomplete="off"> Trocken
-              </label>
-              <label class="btn btn-secondary">
-                <input type="radio" name="moistureOptions" value="1" autocomplete="off"> Normal
-              </label>
-              <label class="btn btn-secondary">
-                <input type="radio" name="moistureOptions" value="2" autocomplete="off"> Feucht
-              </label>
-            </div>
-          </div>
-        </div> -->
         <br>
         <!-- Bakterienkolonieauswahl-->
         <div class="row">

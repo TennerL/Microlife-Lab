@@ -17,19 +17,97 @@ document.addEventListener('DOMContentLoaded', function() {
         txtTemperatureValue.value = slTemperatureRange.value;
     });
 
-    // Moisture slider
-    const slMoistureRange = document.getElementById('slConcentrationRange');
-    const txtMoistureValue = document.getElementById('txtConcentrationValue');
+    // Concentration slider
+    const slConcentrationRange = document.getElementById('slConcentrationRange');
+    const txtConcentrationValue = document.getElementById('txtConcentrationValue');
+    slConcentrationRange.addEventListener('input', function() {
+        txtConcentrationValue.value = slConcentrationRange.value;
+    });
+
+    // Moisture slider 
+    const slMoistureRange = document.getElementById('slMoistureRange');
+    const txtMoistureValue = document.getElementById('txtMoistureValue');
     slMoistureRange.addEventListener('input', function() {
         txtMoistureValue.value = slMoistureRange.value;
     });
 
-    // Mutation Probability slider
-    const slMutationRange = document.getElementById('slMutationRange');
-    const txtMutationValue = document.getElementById('txtMutationValue');
-    slMutationRange.addEventListener('input', function() {
-        txtMutationValue.value = slMutationRange.value;
+    const slPhRange = document.getElementById('slPhRange');
+    const phIndicator = document.getElementById('phIndicator');
+
+    updateColor(parseInt(slPhRange.value));
+
+    slPhRange.addEventListener('input', function () {
+        document.getElementById('phValue').innerText = slPhRange.value;
+        updateColor(parseInt(slPhRange.value)); // Parse the value to an integer
     });
+
+    function updateColor(value) {
+        switch (value) {
+            case 0:
+                phIndicator.style.backgroundColor = "#8B0000";
+                break;
+            case 1:
+                phIndicator.style.backgroundColor = "#FF0000";
+                break;
+            case 2:
+                phIndicator.style.backgroundColor = "#FF4500";
+                break;
+            case 3:
+                phIndicator.style.backgroundColor = "#FFA500";
+                break;
+            case 4:
+                phIndicator.style.backgroundColor = "#FFD700";
+                break;
+            case 5:
+                phIndicator.style.backgroundColor = "#FFFF00";
+                break;
+            case 6:
+                phIndicator.style.backgroundColor = "#ADFF2F";
+                break;
+            case 7:
+                phIndicator.style.backgroundColor = "#00FF00";
+                break;
+            case 8: 
+                phIndicator.style.backgroundColor = "#40E0D0";
+                break;
+            case 9:
+                phIndicator.style.backgroundColor = "#87CEEB";
+                break;
+            case 10:
+                phIndicator.style.backgroundColor = "#0000FF";
+                break;
+            case 11:
+                phIndicator.style.backgroundColor = "#00008B";
+                break;
+            case 12:
+                phIndicator.style.backgroundColor = "#8A2BE2";
+                break;
+            case 13:
+                phIndicator.style.backgroundColor = "#9400D3";
+                break;
+            case 14:
+                phIndicator.style.backgroundColor = "#4B0082";
+                break;
+            default:
+                phIndicator.style.backgroundColor = "gray";
+        }
+    }
+
+    //const txtMoistureValue = document.getElementById('txtMoistureValue');
+    // slPhRange.addEventListener('input', function() {
+    //     txtMoistureValue.value = slMoistureRange.value;
+    // });
+
+
+    // Mutation Probability slider
+    // const slMutationRange = document.getElementById('slMutationRange');
+    // const txtMutationValue = document.getElementById('txtMutationValue');
+    // slMutationRange.addEventListener('input', function() {
+    //     txtMutationValue.value = slMutationRange.value;
+    // });
+
+
+
 
     // Holen der Eingabeparameterfelder beim Speichern eines Projektes 
     document.getElementById("btnSaveNewProject").addEventListener("click", function () {
@@ -37,8 +115,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const projectName = document.getElementById("txtProjectName").value;
         const temperature = document.getElementById("slTemperatureRange").value;
         const concentration = document.getElementById("slConcentrationRange").value;
-        const mutationProbability = document.getElementById("slMutationRange").value;
-        //const moisture = document.querySelector('input[name="moistureOptions"]:checked').value;
+        const mutationProbability = 10;//document.getElementById("slMutationRange").value;
+        const ph = document.getElementById("slPhRange").value;
+        const moisture = document.getElementById("txtMoistureValue").value;
         const microOrganism = document.getElementById("ddlMicroOrganisms").value;
         const countMicrobes = document.getElementById("txtMicrobeCount").value;
         const simulationTimeUnit = document.getElementById("ddlTimeUnit").value;
@@ -49,11 +128,12 @@ document.addEventListener('DOMContentLoaded', function() {
             temperature: temperature,
             concentration: concentration,
             mutationProbability: mutationProbability,
-            //moisture: moisture,
+            moisture: moisture,
             microOrganism: microOrganism,
             countMicrobes: countMicrobes,
             simulationTimeUnit: simulationTimeUnit,
-            simulationTime: simulationTime
+            simulationTime: simulationTime,
+            ph: ph
         };
 
         let savedProjects = localStorage.getItem("savedProjects");

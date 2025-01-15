@@ -7,8 +7,9 @@ document.addEventListener('DOMContentLoaded', function() {
     let savedProjects = localStorage.getItem('savedProjects');
     savedProjects = JSON.parse(savedProjects);
     let selectedProject = savedProjects.find(project => project.projectName === projectName);
-    let xData = selectedProject.simulations.map(sim => sim.x);
-    let yData = selectedProject.simulations.map(sim => sim.y);
+    let xData = selectedProject.simulations.map(sim => sim.point.x);
+    let yData = selectedProject.simulations.map(sim => sim.point.y);
+    let count = selectedProject.simulations.map(sim => sim.point.count);
 
     var myChart = echarts.init(document.getElementById('main'));
       var option = {
@@ -16,6 +17,10 @@ document.addEventListener('DOMContentLoaded', function() {
           text: "Abschlussbericht für " + selectedProject.projectName + " | " + selectedProject.microOrganism
         },
         tooltip: {},
+        legend: {
+          textStyle: {color: 'white'},
+          data: ["Wachstumsrate", "Anzahl"]
+        },
         xAxis: {
             data: xData
         },
@@ -24,7 +29,15 @@ document.addEventListener('DOMContentLoaded', function() {
           {
             name: 'Wachstumsrate',
             type: 'line',
-            data: yData
+            data: yData,
+            smooth: true
+          },
+          {
+            name: 'Anzahl',
+            type: 'line',
+            data: count,
+            smooth: true
+
           }
         ]
       };

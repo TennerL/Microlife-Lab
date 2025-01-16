@@ -97,7 +97,6 @@ function updateSimulation() {
     for (let i = 0; i < microbes.length; i++) {
         microbes[i].grow();
     }
-    simulationTime += timeScale * 10; 
 }
 
 
@@ -261,15 +260,16 @@ function draw() {
     if (simulationTime >= totalSimulationTime) {
         simulationActive = false; 
         logMicrobeData(microbes,currentHour, simulationActive);
+        console.log("LastTime Executed");
         return; 
     } 
 
     if (currentHour > lastLoggedHour) {
         logMicrobeData(microbes, currentHour, simulationActive);
+        console.log("LoggingInProgress");
         lastLoggedHour = currentHour;
     }
   
-
     stroke(255);
     fill(50); 
     ellipse(width / 2, height / 2, width - 50, height - 50); 
@@ -278,8 +278,8 @@ function draw() {
         microbes[i].grow();
         microbes[i].display();
     }
-    updateSimulation(); 
 }
+
 
 const calculateDeathRate = (age, crowding) => {
     let baseDeathRate = 0.0001 * (age/500);
@@ -395,11 +395,9 @@ class DataBuilder {
 }
 
 
-var totalSimHours = totalSimulationTime / 60 / 60; 
 const builder = new DataBuilder();
 
 function logMicrobeData(microbes, currentHour, simulationActive) {
-
     const averageSize = microbes
         .map (microbe => microbe.size)
         .reduce((sum, size) => sum + size, 0)

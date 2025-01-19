@@ -6,6 +6,10 @@
     body {
       font-family: Arial, sans-serif;
     }
+    .cards {
+      width: 250px;
+      height: 300px;
+    }
   </style>
 </head>
 <body class="container bg-dark text-light">
@@ -17,13 +21,57 @@
 <main>
   <div class="jumbotron bg-dark text-light">
     <h1>Willkommen</h1>
-    <b>Noch zu erledigen: </b>
-    <li><b>Idee: Anzahl Mikroben (nMikroben beim Start der Simulation)</b></li>
-    <li>Mikrobensterben</li>
-    <li>Vergleichen des Wachstumes zwischen zwei Projekten</li>
-    <li>Mutationswarscheinlichkeit überarbeiten (Plausibilität, Farben...)</li>
-    <li>Bilder ändern je nach Mikroorganismus in der Projektansicht</li>
+    <div class="card">
+      <div class="card-body bg-dark text-light">
+        Diese Anwendung simuliert das Wachstum verschiedener Mikroorganismen unter bestimmten Umwelteinflüssen. Auf dieser Seite finden sich vorkonfigurierte Presets. 
+        Ansonsten kann eine beliebige Simulation unter Projekt erstellt werden.
+      </div>
+    </div>
   </div>
+
+  <br>
+
+  <div class="row">
+
+    <div class="col-md-3">
+      <div class="card cards">
+        <img class="card-img-top" src="/images/bread.jpg" alt="Card image cap">
+        <div class="card-body">
+          <p class="card-text">Unter welchen Bedingungen breitet sich Schimmel auf Brot aus? Ab wann ist es gesundheitlich bedenklich?</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card cards">
+        <img class="card-img-top" src="/images/ausschlag.jpg" alt="Card image cap">
+        <div class="card-body">
+          <p class="card-text">Welche Faktoren begünstigen die Entwicklung einer Pilzinfektion durch Candida albicans?</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card cards">
+        <img class="card-img-top" src="/images/wasser.jpg" alt="Card image cap">
+        <div class="card-body">
+          <p class="card-text">Wie beeinflussen Temperatur und Feuchtigkeit die Vermehrung von Escherichia coli in Wasserquellen?</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card cards">
+        <img class="card-img-top" src="/images/pillen.jpg" alt="Card image cap">
+        <div class="card-body">
+          <p class="card-text">Unter welchen Umständen wird Staphylococcus aureus resistent gegen Antibiotika?</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
 </main>
 
 <footer>

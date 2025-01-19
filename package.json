@@ -4,6 +4,7 @@
   "main": "main.mjs",
   "scripts": {
     "start": "electron .",
+    "build": "electron-builder", 
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -15,6 +16,14 @@
     "express": "^4.19.2"
   },
   "devDependencies": {
-    "electron": "^32.0.1"
+    "electron": "^32.2.8",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.microlifelab",
+    "productName": "MicroLife-Lab",
+    "win": {
+      "target": "nsis"
+    }
   }
 }

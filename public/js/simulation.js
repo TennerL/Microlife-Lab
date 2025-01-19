@@ -19,6 +19,8 @@ let countMicrobes = selectedProject.countMicrobes;
 let simulationTimeUnit = selectedProject.simulationTimeUnit;
 let simulationTimeRaw = selectedProject.simulationTime;
 
+
+
 let totalSimulationTime;
 switch(simulationTimeUnit) {
     case "h": totalSimulationTime = simulationTimeRaw * 3600;
@@ -46,8 +48,35 @@ let simulationTime = 0;
 let simulationActive = true; 
 
 
-// Logik für die Zeitleiste 
 document.addEventListener("DOMContentLoaded", (event) => {
+        
+    const radioButtons = document.querySelectorAll('input[type="radio"]');
+    const labels = document.querySelectorAll('label');
+
+    radioButtons.forEach(button => {
+        button.addEventListener('change', () => {
+          labels.forEach(label => {
+            label.classList.remove('active');
+          });
+          const activeLabel = button.parentElement;
+          activeLabel.classList.add('active');
+          const activeButtonId = document.querySelector('input[type="radio"]:checked').id;
+          switch(activeButtonId) {
+            case "normal":
+                timeScale = 1;
+                break;
+            case "fast":
+                timeScale = 2;
+                break;
+            case "faster":
+                timeScale = 3;
+                break;
+          }
+          
+          clearInterval(interval);
+          startSimulation();  
+        });
+    });
 
     let interval;
     let currentIndex = 0;
@@ -56,7 +85,6 @@ document.addEventListener("DOMContentLoaded", (event) => {
 
     timescaleDIV.innerHTML = "";
     currentIndex = 0; 
-
 
     if (!isNaN(timeInHours) && timeInHours > 0) {
         let graph = "<table>";
@@ -70,23 +98,30 @@ document.addEventListener("DOMContentLoaded", (event) => {
         cells = timescaleDIV.querySelectorAll("td");
     }
 
-    interval = setInterval(() => {
-        if (currentIndex > 0) {
-            cells[currentIndex - 1].innerHTML = `<span class="marker">|</span>`;
-        }
-        if (currentIndex < cells.length) {
-            cells[currentIndex].innerHTML = `<span class="cursor"></span>`;
-            currentIndex++;
-            
-            simulationTime += 3600
-            updateSimulation();
+    const getIntervalTime = () => {
+        return 1000 / timeScale; 
+    };
 
-        } else {
-            clearInterval(interval);
-            simulationActive = false;
-            console.log("Simulation beendet")
-        }
-    }, 1000);
+    function startSimulation() {
+        interval = setInterval(() => {
+            if (currentIndex > 0) {
+                cells[currentIndex - 1].innerHTML = `<span class="marker">|</span>`;
+            }
+            if (currentIndex < cells.length) {
+                cells[currentIndex].innerHTML = `<span class="cursor"></span>`;
+                currentIndex++;
+                
+                simulationTime += 3600; 
+                updateSimulation();
+
+            } else {
+                clearInterval(interval);
+                simulationActive = false;
+                console.log("Simulation beendet");
+            }
+        }, getIntervalTime()); 
+    }
+    startSimulation();
 });
 
 function updateSimulation() {
@@ -94,7 +129,6 @@ function updateSimulation() {
         microbes[i].grow();
     }
 }
-
 
 function setup() {
     let canvas = createCanvas(600, 600); 

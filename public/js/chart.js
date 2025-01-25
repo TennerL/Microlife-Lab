@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let xData = selectedProject.simulations.map(sim => sim.point.x);
     let yData = selectedProject.simulations.map(sim => sim.point.y);
     let count = selectedProject.simulations.map(sim => sim.point.count);
+    let countMutations = selectedProject.simulations.map(sim => sim.point.mutation);
 
     var myChart = echarts.init(document.getElementById('main'));
       var option = {
@@ -19,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
         tooltip: {},
         legend: {
           textStyle: {color: 'white'},
-          data: ["Wachstumsrate", "Anzahl"]
+          data: ["Wachstumsrate", "Anzahl Mikroorganismen", "Anzahl Mutationen"]
         },
         xAxis: {
             data: xData
@@ -33,12 +34,18 @@ document.addEventListener('DOMContentLoaded', function() {
             smooth: true
           },
           {
-            name: 'Anzahl',
+            name: 'Anzahl Mikroorganismen',
             type: 'line',
             data: count,
             smooth: true
-
+          },
+          {
+            name: 'Anzahl Mutationen',
+            type: 'line',
+            data: countMutations,
+            smooth: true
           }
+
         ]
       };
       myChart.setOption(option);

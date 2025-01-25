@@ -1,6 +1,27 @@
 
 const { json } = require("express");
 
+// vermeidung von Magic-Numbers
+const MAX_MICROBES = 2000
+const MUTATION_RATE = 0.001;
+const DIVISION_SIZE_THRESHOLD = 20
+const DIVISION_AGE_THRESHOLD = 100
+const MAX_MICROBE_SIZE = 80
+const DEATH_SIZE_REDUCTION = 0.8
+const DEATH_ANIMATION_DURATION = 2000 
+const SIMULATION_UPDATE_INTERVAL = 10 
+
+const BASE_GROWTH_RATE = 0.0001
+const CROWDING_FACTOR = 0.001
+
+const MIN_MOISTURE = 0.1
+const MIN_PH = 4.5
+const MOISTURE_DECREASE_RATE = 0.0001
+const PH_DECREASE_RATE = 0.0001
+
+
+
+
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
 let projectName = urlParams.get('projectName');
@@ -10,8 +31,8 @@ savedProjects = JSON.parse(savedProjects);
 let selectedProject = savedProjects.find(project => project.projectName === projectName);
 let temperature = selectedProject.temperature;
 let concentration = selectedProject.concentration;
-let mutationProbability = selectedProject.mutationProbability;
 let microOrganism = selectedProject.microOrganism;
+let mutationProbability = selectedProject.mutationProbability;
 let ph = selectedProject.ph;
 let moisture = selectedProject.moisture;
 
@@ -112,7 +133,6 @@ document.addEventListener("DOMContentLoaded", (event) => {
                 currentIndex++;
                 
                 simulationTime += 3600; 
-                updateSimulation();
 
             } else {
                 clearInterval(interval);
@@ -124,11 +144,30 @@ document.addEventListener("DOMContentLoaded", (event) => {
     startSimulation();
 });
 
-function updateSimulation() {
-    for (let i = 0; i < microbes.length; i++) {
-        microbes[i].grow();
-    }
+//////////////////////////////////////
+// Hilsfunktionen Verteilungsformen //
+//////////////////////////////////////
+
+// Gleichverteilung (Verteilung auf der Petrischale)
+function randomUniform(min, max) {
+    return Math.random() * (max - min) + min;
 }
+
+// Normalverteilung (Box-Muller-Methode)
+// Für Wachstumsraten, simulierung biologische Variabilität 
+function randomNormal(mean, stdDev) {
+    let u = 1 - Math.random();
+    let v = 1 - Math.random();
+    let z = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+    return z * stdDev + mean;
+} 
+
+// Exponentialverteilung für seltene Mutationen
+function randomExponential(lambda) {
+    return -Math.log(1 - Math.random()) / lambda;
+}
+
+////////////////////////////////////////
 
 function setup() {
     let canvas = createCanvas(600, 600); 
@@ -137,38 +176,52 @@ function setup() {
     
     switch(microOrganism) {
         case "candida":
-                growthRate = calculateGrowthRateCandida(temperature, concentration) * timeScale; 
+            baseGrowthRate = calculateGrowthRateCandida(temperature, concentration, ph, moisture) * timeScale; 
+            growthRate = randomNormal(baseGrowthRate, baseGrowthRate * 0.2); 
             break;
         case "aspergillus":
-                growthRate = calculateGrowthRateAspergillusNiger(temperature, concentration) * timeScale; 
+            baseGrowthRate = calculateGrowthRateAspergillusNiger(temperature, concentration, ph, moisture) * timeScale; 
+            growthRate = randomNormal(baseGrowthRate, baseGrowthRate * 0.2);
             break;
         case "penicillium":
-                growthRate = calculateGrowthRatePenicilliumNotatum(temperature, concentration) * timeScale; 
+            baseGrowthRate = calculateGrowthRatePenicilliumNotatum(temperature, concentration, ph, moisture) * timeScale; 
+            growthRate = randomNormal(baseGrowthRate, baseGrowthRate * 0.2);
             break;
         case "ecoli":
-                growthRate = calculateGrowthRateEscherichiaColi(temperature, concentration) * timeScale; 
+            baseGrowthRate = calculateGrowthRateEscherichiaColi(temperature, concentration, ph, moisture) * timeScale; 
+            growthRate = randomNormal(baseGrowthRate, baseGrowthRate * 0.2);
             break;
         case "staphylococcus":
-                growthRate = calculateGrowthRateStaphylococcusAureus(temperature, concentration) * timeScale; 
+            baseGrowthRate = calculateGrowthRateStaphylococcusAureus(temperature, concentration, ph, moisture) * timeScale; 
+            growthRate = randomNormal(baseGrowthRate, baseGrowthRate * 0.2);
+            break;
+        case "bacillus":
+            baseGrowthRate = calculateGrowthRateBacillusSubtilis(temperature, concentration, ph, moisture) * timeScale;
+            growthRate = randomNormal(baseGrowthRate, baseGrowthRate * 0.2);
             break;
         default:
     }
     
-    mutationRate = mutationProbability * timeScale / 100;
+    //mutationRate = randomNormal(1, 0.05);//mutationProbability * timeScale / 100;
     deathRate = 0.001 * timeScale; 
     divisionRate = 0.005 * timeScale;
    
     for (let i = 0; i < numMicrobes; i++) {
-        let angle = random(TWO_PI); 
-        let r = random(petriRadius - 100 / 2);
-        let x = width / 2 + cos(angle) * r;
-        let y = height / 2 + sin(angle) * r;
+        let angle = randomUniform(0, TWO_PI); 
+        let r = randomUniform(0, petriRadius - 100 / 2);
+        let x = width / 2 + Math.cos(angle) * r;
+        let y = height / 2 + Math.sin(angle) * r;
         microbes.push(new Microbe(x, y));
     }
 }
 
-// Wachstumsrate basierend auf Temperatur und Nährstoffkonzentration
-function calculateGrowthRateCandida(temperature, concentration) {
+
+//////////////////////////////////////
+// Funktionen für die Wachstumsrate //
+//////////////////////////////////////
+
+
+function calculateGrowthRateCandida(temperature, concentration, ph, moisture) {
     let baseGrowthRate;
     
     if (temperature <= 0 || temperature > 50) {
@@ -185,28 +238,44 @@ function calculateGrowthRateCandida(temperature, concentration) {
 
     // Nährstoffkonzentration beeinflusst die Wachstumsrate linear (z.B. von 0 bis 100 %)
     // Konzentration in Prozent, 0 % = kein Wachstum, 100 % = volles Wachstum
-    let nutrientFactor = concentration / 100;
-    return baseGrowthRate * nutrientFactor;
+    let pHFactor = 1 - Math.abs(ph - 5.5) / 5 // Optimal pH around 5.5
+    pHFactor = constrain(pHFactor, 0.1, 1)
+  
+    let moistureFactor = map(moisture, 0.3, 0.9, 0, 1)
+    moistureFactor = constrain(moistureFactor, 0, 1)
+  
+    const nutrientFactor = concentration / 100
+  
+    return baseGrowthRate * nutrientFactor * pHFactor * moistureFactor
 }
 
-function calculateGrowthRateBacillusSubtilis(temperature, concentration) {
-    let baseGrowthRate;
-
-    if (temperature <= 0 || temperature > 50) {
-        baseGrowthRate = 0;
+function calculateGrowthRateBacillusSubtilis(temperature, concentration, ph, moisture) {
+    let baseGrowthRate
+  
+    if (temperature <= 0 || temperature > 55) {
+      baseGrowthRate = 0
     } else if (temperature > 0 && temperature < 15) {
-        baseGrowthRate = 0.002; 
+      baseGrowthRate = 0.002
     } else if (temperature >= 15 && temperature < 37) {
-        baseGrowthRate = map(temperature, 15, 37, 0.01, 0.15); 
+      baseGrowthRate = map(temperature, 15, 37, 0.01, 0.15)
     } else if (temperature >= 37 && temperature <= 50) {
-        baseGrowthRate = map(temperature, 37, 50, 0.15, 0.02); 
+      baseGrowthRate = map(temperature, 37, 50, 0.15, 0.02)
+    } else if (temperature > 50 && temperature <= 55) {
+      baseGrowthRate = map(temperature, 50, 55, 0.02, 0.001)
     }
+  
+    let pHFactor = 1 - Math.abs(ph - 7.0) / 3 // Optimal pH around 7.0
+    pHFactor = constrain(pHFactor, 0.1, 1)
+  
+    let moistureFactor = map(moisture, 0.4, 0.95, 0, 1)
+    moistureFactor = constrain(moistureFactor, 0, 1)
+  
+    const nutrientFactor = concentration / 100
+  
+    return baseGrowthRate * nutrientFactor * pHFactor * moistureFactor
+  }
 
-    let nutrientFactor = concentration / 100;
-    return baseGrowthRate * nutrientFactor;
-}
-
-function calculateGrowthRateStaphylococcusAureus(temperature, concentration) {
+function calculateGrowthRateStaphylococcusAureus(temperature, concentration, ph, moisture) {
     let baseGrowthRate;
 
     if (temperature <= 0 || temperature > 46) {
@@ -219,11 +288,18 @@ function calculateGrowthRateStaphylococcusAureus(temperature, concentration) {
         baseGrowthRate = map(temperature, 37, 46, 0.25, 0.01); 
     }
 
-    let nutrientFactor = concentration / 100;
-    return baseGrowthRate * nutrientFactor;
+    let pHFactor = 1 - Math.abs(ph - 7.5) / 3.5 // Optimal pH around 7.5
+    pHFactor = constrain(pHFactor, 0.1, 1)
+  
+    let moistureFactor = map(moisture, 0.25, 0.9, 0, 1)
+    moistureFactor = constrain(moistureFactor, 0, 1)
+  
+    const nutrientFactor = concentration / 100
+  
+    return baseGrowthRate * nutrientFactor * pHFactor * moistureFactor
 }
 
-function calculateGrowthRateEscherichiaColi(temperature, concentration) {
+function calculateGrowthRateEscherichiaColi(temperature, concentration, ph, moisture) {
     let baseGrowthRate;
 
     if (temperature <= 0 || temperature > 45) {
@@ -236,11 +312,18 @@ function calculateGrowthRateEscherichiaColi(temperature, concentration) {
         baseGrowthRate = map(temperature, 37, 45, 0.3, 0.05); 
     }
 
-    let nutrientFactor = concentration / 100;
-    return baseGrowthRate * nutrientFactor;
+    let pHFactor = 1 - Math.abs(ph - 7.0) / 3 // Optimal pH around 7.0
+    pHFactor = constrain(pHFactor, 0.1, 1)
+  
+    let moistureFactor = map(moisture, 0.3, 0.95, 0, 1)
+    moistureFactor = constrain(moistureFactor, 0, 1)
+  
+    const nutrientFactor = concentration / 100
+  
+    return baseGrowthRate * nutrientFactor * pHFactor * moistureFactor
 }
 
-function calculateGrowthRatePenicilliumNotatum(temperature, concentration) {
+function calculateGrowthRatePenicilliumNotatum(temperature, concentration, ph, moisture) {
     let baseGrowthRate;
 
     if (temperature <= 0 || temperature > 40) {
@@ -255,11 +338,18 @@ function calculateGrowthRatePenicilliumNotatum(temperature, concentration) {
         baseGrowthRate = map(temperature, 35, 40, 0.04, 0.005);
     }
 
-    let nutrientFactor = concentration / 100;
-    return baseGrowthRate * nutrientFactor;
+    let pHFactor = 1 - Math.abs(ph - 6.0) / 4 
+    pHFactor = constrain(pHFactor, 0.1, 1)
+  
+    let moistureFactor = map(moisture, 0.25, 0.85, 0, 1)
+    moistureFactor = constrain(moistureFactor, 0, 1)
+  
+    const nutrientFactor = concentration / 100
+  
+    return baseGrowthRate * nutrientFactor * pHFactor * moistureFactor
 }
 
-function calculateGrowthRateAspergillusNiger(temperature, concentration) {
+function calculateGrowthRateAspergillusNiger(temperature, concentration, ph, moisture) {
     let baseGrowthRate;
 
     if (temperature <= 0 || temperature > 50) {
@@ -325,43 +415,10 @@ function calculateDivisionRate(microOrganism, temperature, pH, moisture, concent
     return baseDivisionRate * tempFactor * pHFactor * moistureFactor * nutrientFactor;
 }
 
-let lastLoggedHour = 0; 
-function draw() {
-    if (!simulationActive) {
-        return;
-    }
-
-    simulationTime += timeScale * 10 / 60; 
-
-    moisture = max(moisture - 0.0001 * timeScale, 0.1); 
-    ph = max(ph - 0.0001 * timeScale, 4.5);
-
-    let currentHour = Math.floor(simulationTime / 3600); 
-
-    if (simulationTime >= totalSimulationTime) {
-        simulationActive = false; 
-        logMicrobeData(microbes,currentHour, simulationActive);
-        return; 
-    } 
-
-    if (currentHour > lastLoggedHour) {
-        logMicrobeData(microbes, currentHour, simulationActive);
-        lastLoggedHour = currentHour;
-    }
-  
-    stroke(255);
-    fill(50); 
-    ellipse(width / 2, height / 2, width - 50, height - 50); 
-
-    for (let i = 0; i < microbes.length; i++) {
-        microbes[i].grow();
-        microbes[i].display();
-    }
-}
 
 function calculateDeathRate(age, crowding, pH, moisture, temperature, microOrganism) {
-    let baseDeathRate = 0.0001 * (age/500);
-    let crowdingFactor = (crowding / 2000) * 0.001;
+    let baseDeathRate = BASE_GROWTH_RATE * (age/500);
+    let crowdingFactor = (crowding / MAX_MICROBES) * CROWDING_FACTOR;
     let tempStress = 0;
     let pHStress = 0;
     let moistureStress = 0;
@@ -404,9 +461,10 @@ class Microbe {
         this.size = random(0, 5); 
         this.growthFactor = growthRate * timeScale; 
         this.color = color(100, 255, 100, 150);
-        this.maxSize = 80;
+        this.maxSize = MAX_MICROBE_SIZE;
         this.age = 0;
         this.isAlive = true; 
+        this.isMutated = false;
     }
 
     grow() {
@@ -414,6 +472,26 @@ class Microbe {
         let newSize = this.size + this.growthFactor;
         let distanceFromCenter = dist(this.x, this.y, width / 2, height / 2);
         this.age++;
+
+        if (!this.isAlive) {
+            this.size *= 0.95; 
+            if (this.size <= 0.5) {
+                let index = microbes.indexOf(this);
+                if (index > -1) {
+                    microbes.splice(index, 1);
+                }
+            }
+            return; 
+        }
+
+        const lambda = 0.2; // Durchschnittlich 1 Mutation alle 5 Zeiteinheiten
+        if (this.isMutated) {
+            this.growthFactor *= 1.1; 
+            this.deathProbability *= 0.9; 
+        }
+        if (randomExponential(lambda) < 0.1) {  
+            this.mutate();
+        }
         
         const deathProbability = calculateDeathRate(
             this.age,
@@ -430,25 +508,37 @@ class Microbe {
         const  capacityFactor = 1 - (microbes.length / 2000);
         this.growthFactor *= capacityFactor;
 
-        const divisionRate = calculateDivisionRate(microOrganism, temperature, ph, moisture, concentration);
-        if (this.age > 100 && this.size > 20 && random() < divisionRate * capacityFactor){
+        //const divisionRate = calculateDivisionRate(microOrganism, temperature, ph, moisture, concentration);
+
+        const divisionRate = randomNormal(
+            calculateDivisionRate(microOrganism, temperature, ph, moisture, concentration),
+            0.05
+        );
+
+        if (this.age > DIVISION_AGE_THRESHOLD && 
+            this.size > DIVISION_SIZE_THRESHOLD && 
+            random() < divisionRate * capacityFactor
+        ){
             this.divide();
         }
 
+        if (distanceFromCenter + newSize / 2 >= petriRadius || newSize > this.maxSize) {
+            const distanceFactor = max(0, (petriRadius - distanceFromCenter - this.size / 2) / (this.growthFactor + 1));
+            const sizeFactor = max(0, (this.maxSize - this.size) / (this.growthFactor + 1));
+            const growthModifier = min(distanceFactor, sizeFactor);
+        
+            this.growthFactor *= growthModifier; 
+            newSize = this.size + this.growthFactor;
+        }
         if (distanceFromCenter + newSize / 2 < petriRadius && newSize <= this.maxSize) {
             this.size = newSize;
-        } else {
-            this.growthFactor = 0;
         }
-    
-        if (this.isAlive && mutationRate > 0 && random() < mutationRate) {
-            this.size *= random(0.98, 1.02);
-        }
+
         return this.isAlive; 
     }
 
     divide() {
-        if (microbes.length < 2000) { 
+        if (microbes.length < MAX_MICROBES) { 
           let angle = random(TWO_PI);
           let newX = this.x + cos(angle) * this.size;
           let newY = this.y + sin(angle) * this.size;
@@ -460,10 +550,18 @@ class Microbe {
           }
         }
       }
+      mutate() {
+        if (!this.isMutated && random() < MUTATION_RATE) {
+          this.isMutated = true;
+          this.growthFactor *= 1.5; 
+          this.maxSize *= 1.2; 
+          this.mutationColor = color(255, 0, 0, 150);
+        }
+      }
       death() {
           this.isAlive = false; 
           this.color = color(100, 100, 100, 100); 
-          this.size *= 0.8;  
+          this.size *= DEATH_SIZE_REDUCTION;  
           setTimeout(() => {
               if (this.size <= 0.5) {
                   let index = microbes.indexOf(this);
@@ -471,28 +569,55 @@ class Microbe {
                       microbes.splice(index, 1); 
                   }
               }
-          }, 2000);  
+          }, DEATH_ANIMATION_DURATION); 
+          
       }
     
-    display() {
-        if (fun) {
-            fill(random(255), random(255), random(255), 150);
-        } else {
-            fill(this.color);
-        }
-        noStroke();
-        ellipse(this.x, this.y, this.size, this.size);
-    }
+      display() {
+          if (fun) {
+              fill(random(255), random(255), random(255), 150);
+          } else {
+              fill(this.isMutated ? this.mutationColor : this.color);
+          }
+          noStroke();
+          ellipse(this.x, this.y, this.size, this.size);
+      }
 }
 
-function updateSimulation() {
-    for (let i = microbes.length - 1; i >= 0; i--) {
-      if (!microbes[i].grow()) {
-        microbes.splice(i, 1); 
-      }
+let lastLoggedHour = 0; 
+function draw() {
+    if (!simulationActive) {
+        return;
     }
-    simulationTime += timeScale * 10;
-  }
+    simulationTime += (timeScale * SIMULATION_UPDATE_INTERVAL) / 60; 
+
+    moisture = max(moisture - MOISTURE_DECREASE_RATE  * timeScale, MIN_MOISTURE); 
+    ph = max(ph - PH_DECREASE_RATE * timeScale, MIN_PH);
+
+    let currentHour = Math.floor(simulationTime / 3600); 
+
+    if (simulationTime >= totalSimulationTime) {
+        simulationActive = false; 
+        logMicrobeData(microbes,currentHour, simulationActive);
+        return; 
+    } 
+
+    if (currentHour > lastLoggedHour) {
+        logMicrobeData(microbes, currentHour, simulationActive);
+        lastLoggedHour = currentHour;
+    }
+  
+    stroke(255);
+    fill(50); 
+    ellipse(width / 2, height / 2, width - 50, height - 50); 
+
+    for (let i = 0; i < microbes.length; i++) {
+        microbes[i].grow();
+        microbes[i].display();
+    }
+
+}
+
 
 
 class DataBuilder {
@@ -500,10 +625,11 @@ class DataBuilder {
         this.data = [];
     }
 
-    addPoint(count, hour, avgSize) {
+    addPoint(count, mutation, hour, avgSize) {
         this.data.push({
             point: {
                 count: count,
+                mutation: mutation,
                 x: hour, 
                 y: avgSize 
             }
@@ -521,11 +647,15 @@ class DataBuilder {
 const builder = new DataBuilder();
 
 function logMicrobeData(microbes, currentHour, simulationActive) {
+
+   const mutatedCount = microbes.filter(m => m.isMutated).length;
+   const mutationRate = mutatedCount / microbes.length;
+    
     const averageSize = microbes
         .map (microbe => microbe.size)
         .reduce((sum, size) => sum + size, 0)
         / microbes.length;
-    builder.addPoint(microbes.length,currentHour, averageSize);
+    builder.addPoint(microbes.length, mutatedCount, currentHour, averageSize);
     
     if (!simulationActive) {
         const chartButton = document.getElementById("btnChart");

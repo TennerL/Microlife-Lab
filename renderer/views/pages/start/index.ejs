@@ -7,8 +7,13 @@
       font-family: Arial, sans-serif;
     }
     .cards {
-      width: 250px;
-      height: 300px;
+      height: 350px;
+      border: 1px solid;
+      box-shadow: 1px 1px 8px 1px black;
+    }
+    .notice {
+      border: 1px solid;
+      box-shadow: 1px 1px 8px 1px black;
     }
   </style>
 </head>
@@ -21,7 +26,7 @@
 <main>
   <div class="jumbotron bg-dark text-light">
     <h1>Willkommen</h1>
-    <div class="card">
+    <div class="card notice">
       <div class="card-body bg-dark text-light">
         Diese Anwendung simuliert das Wachstum verschiedener Mikroorganismen unter bestimmten Umwelteinflüssen. Auf dieser Seite finden sich vorkonfigurierte Presets. 
         Ansonsten kann eine beliebige Simulation unter Projekt erstellt werden.
@@ -31,41 +36,50 @@
   <br>
   <div class="row">
     <div class="col-md-3">
-      <div class="card cards">
-        <img class="card-img-top" src="/images/bread.jpg" alt="Card image cap">
+      <div class="card cards bg-dark text-light">
+        <img class="card-img-top" src="/images/bread.jpg" style="height:160px;" alt="Card image cap">
         <div class="card-body">
           <p class="card-text">Unter welchen Bedingungen breitet sich Schimmel auf Brot aus? Ab wann ist es gesundheitlich bedenklich?</p>
+          <a href="#" class="btn btn-primary"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"/>
+          </svg></a>
         </div>
       </div>
     </div>
     <div class="col-md-3">
-      <div class="card cards">
-        <img class="card-img-top" src="/images/ausschlag.jpg" alt="Card image cap">
+      <div class="card cards bg-dark text-light">
+        <img class="card-img-top" src="/images/ausschlag.jpg" style="height:160px;" alt="Card image cap">
         <div class="card-body">
           <p class="card-text">Welche Faktoren begünstigen die Entwicklung einer Pilzinfektion durch Candida albicans?</p>
+          <a href="#" class="btn btn-primary"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"/>
+          </svg></a>
         </div>
       </div>
     </div>
     <div class="col-md-3">
-      <div class="card cards">
-        <img class="card-img-top" src="/images/wasser.jpg" alt="Card image cap">
+      <div class="card cards bg-dark text-light">
+        <img class="card-img-top" src="/images/wasser.jpg" style="height:160px;" alt="Card image cap">
         <div class="card-body">
           <p class="card-text">Wie beeinflussen Temperatur und Feuchtigkeit die Vermehrung von Escherichia coli in Wasserquellen?</p>
+          <a href="#" class="btn btn-primary"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"/>
+          </svg></a>
         </div>
       </div>
     </div>
     <div class="col-md-3">
-      <div class="card cards">
-        <img class="card-img-top" src="/images/pillen.jpg" alt="Card image cap">
+      <div class="card cards bg-dark text-light">
+        <img class="card-img-top" src="/images/pillen.jpg" style="height:160px;" alt="Card image cap">
         <div class="card-body">
-          <p class="card-text">Unter welchen Umständen wird Staphylococcus aureus resistent gegen Antibiotika?</p>
+          <p class="card-text">Unter welchen Umständen wird Staphylococcus aureus resistent gegen Antibiotika?</p><br>
+          <a href="#" class="btn btn-primary"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"/>
+          </svg></a>
         </div>
       </div>
     </div>
-
   </div>
-
-
 </main>
 
 <footer>

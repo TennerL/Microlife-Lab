@@ -97,7 +97,6 @@ document.addEventListener('DOMContentLoaded', function() {
             minGermCount: minGermCount
         };
 
-
         if (savedProjects) {
             savedProjects = JSON.parse(savedProjects);
         } else {
@@ -241,8 +240,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Funktion zum Löschen eines Projekts
     window.deleteProject = function(index) {
         let savedProjects = localStorage.getItem("savedProjects");
+        
 
-        if (savedProjects) {
+        if (confirm("Sind Sie sicher, dass sie das Projekt löschen wollen?")) {
             savedProjects = JSON.parse(savedProjects);
 
             savedProjects.splice(index, 1);

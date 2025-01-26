@@ -507,8 +507,6 @@ class Microbe {
         const  capacityFactor = 1 - (microbes.length / 2000);
         this.growthFactor *= capacityFactor;
 
-        //const divisionRate = calculateDivisionRate(microOrganism, temperature, ph, moisture, concentration);
-
         const divisionRate = randomNormal(
             calculateDivisionRate(microOrganism, temperature, ph, moisture, concentration),
             0.05

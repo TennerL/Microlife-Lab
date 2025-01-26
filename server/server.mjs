@@ -1,3 +1,4 @@
+
 import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -5,26 +6,38 @@ import { fileURLToPath } from 'url';
 const app = express();
 const PORT = 3000;
 
-app.set('view engine', 'ejs');
-app.set('views', path.join(path.dirname(fileURLToPath(import.meta.url)), '../renderer/views'));
-//app.use(express.static(path.join(path.dirname(fileURLToPath(import.meta.url)), '../assets')));
-app.use(express.static('public'));
-app.use(express.static('assets'));
+// Use absolute paths for serving static files
+const __dirname = path.dirname(fileURLToPath(import.meta.url));  // Ensure correct directory
+const publicPath = path.join(__dirname, '../public');
+const assetsPath = path.join(__dirname, '../assets');
 
+// Serve static files
+app.use(express.static(publicPath));
+app.use(express.static(assetsPath));
+
+
+app.use('/assets/images', express.static(path.join(assetsPath, 'images')));
+app.use('/public/js', express.static(path.join(publicPath, 'js')));
+
+
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, '../renderer/views'));
+
+// Routes
 app.get('/', (req, res) => {
-  res.render('../views/pages/start/index.ejs', { title: 'Start' });
+  res.render('pages/start/index.ejs', { title: 'Start' });
 });
 
 app.get('/main', (req, res) => {
-  res.render('../views/pages/main/index.ejs', {title: 'Versuch'})
-})
+  res.render('pages/main/index.ejs', { title: 'Versuch' });
+});
 
 app.get('/simulation', (req, res) => {
-  res.render('../views/pages/simulation/index.ejs', {title: 'Simulation'})
-})
+  res.render('pages/simulation/index.ejs', { title: 'Simulation' });
+});
 
 app.get('/chart', (req, res) => {
-  res.render('../views/pages/chart/index.ejs', {title: 'Chart'})
-})
+  res.render('pages/chart/index.ejs', { title: 'Chart' });
+});
 
 export default app;

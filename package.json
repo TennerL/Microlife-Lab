@@ -24,7 +24,27 @@
     "appId": "com.microlifelab",
     "productName": "MicroLife-Lab",
     "win": {
-      "target": "nsis"
-    }
-  }
+      "target": "nsis",
+      "icon": "petri_dish.ico"
+    },
+    "extraResources": [
+      {
+        "from": "public/",
+        "to": "public/",
+        "filter": ["**/*"]
+      },
+      {
+        "from": "assets/",
+        "to": "assets/",
+        "filter": ["**/*"]
+      }
+    ]
+  },
+  "files": [
+    "main.mjs",
+    "server/server.mjs",
+    "renderer/**/*",
+    "public/**/*",
+    "assets/**/*"
+  ]
 }

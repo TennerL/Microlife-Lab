@@ -79,7 +79,7 @@
     <!--Titel mit x-Button-->
     <div class="row">
       <div class="col-sm-11" style="text-align: left;">
-        <b>Projekt erstellen</b>
+        <b id="txtWindowTitle">Projekt erstellen</b>
       </div>
       <div class="col-sm-1" style="text-align: right;">
         <button class="btn btn-danger" id="btnCloseNewProject">x</button>
@@ -90,7 +90,7 @@
         <!-- Projektname -->
         <div class="row">
           <div class="col-md-7">
-            <input type="text" id="txtProjectName" class="form-control" placeholder="Projektname">
+            <input type="text" id="txtProjectName" class="form-control" placeholder="Projektname" required="true">
           </div>
         </div>
         <!-- Eingabeparameter für das Projekt -->
@@ -129,7 +129,7 @@
             <div class="slider-container">
               <input type="range" class="form-range slNewProject" min="0" max="14" id="slPhRange">
               <div id="phIndicator" style="width: 113px; height:38px; border: 1px solid; border-radius: 0.375rem; margin: 10px; background-color: black; padding-top: 7px; padding-left:10px;">
-                <p id="phValue" style="color:black;">7</p>
+                <p id="txtPhValue"></p>
               </div>
             </div>
           </div>
@@ -157,10 +157,12 @@
             <label for="txtCountMicrobes" class="form-label">Anfangsanzahl</label>
             <input type="number" id="txtMicrobeCount" class="form-control" value="1" min="0" max="100" />
           </div>
+          <div class="col-md-1" style="margin-left: 30px;">
+            <label for="txtMinGermCount" class="form-label">Mindestkeimzahl</label>
+            <input type="number" id="txtMinGermCount" class="form-control" value="0" min="0" max="100000" />
+          </div>
         </div>
-
         <br> 
-        
         <div class="row">
           <div class="col-md-2">
             <label for="txtSimulationDuration" class="form-label">Simulationsdauer</label>
@@ -176,10 +178,10 @@
         </div>
       </div>
     </form>
-    <div class="row" style="position:absolute; bottom:20px; right:2%">
+    <div id="divSave" class="row" style="position:absolute; bottom:20px; right:2%">
       <div class="col-sm-10" style="text-align: left;">
       </div>
-      <div class="col-sm-2" style="text-align: right;">
+      <div  class="col-sm-2" style="text-align: right;">
         <button class="btn btn-primary" id="btnSaveNewProject">Speichen</button>
       </div>
     </div>

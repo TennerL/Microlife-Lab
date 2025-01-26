@@ -24,25 +24,24 @@ const PH_DECREASE_RATE = 0.0001
 
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
-let projectName = urlParams.get('projectName');
+let projectID = urlParams.get('projectID');
 
 let savedProjects = localStorage.getItem('savedProjects');
 savedProjects = JSON.parse(savedProjects);
-let selectedProject = savedProjects.find(project => project.projectName === projectName);
+let selectedProject = savedProjects.find(project => project.id == projectID);
+
+let projectName = selectedProject.projectName;
 let temperature = selectedProject.temperature;
 let concentration = selectedProject.concentration;
 let microOrganism = selectedProject.microOrganism;
-let mutationProbability = selectedProject.mutationProbability;
 let ph = selectedProject.ph;
 let moisture = selectedProject.moisture;
 
 let countMicrobes = selectedProject.countMicrobes;
 let simulationTimeUnit = selectedProject.simulationTimeUnit;
 let simulationTimeRaw = selectedProject.simulationTime;
-
-
-
 let totalSimulationTime;
+
 switch(simulationTimeUnit) {
     case "h": totalSimulationTime = simulationTimeRaw * 3600;
         break;
@@ -53,7 +52,7 @@ switch(simulationTimeUnit) {
 
 let microbes = [];
 let numMicrobes = countMicrobes;
-let growthRate, mutationRate
+let growthRate;
 let petriRadius;
 let fun = false; 
 
@@ -538,53 +537,53 @@ class Microbe {
     }
 
     divide() {
-        if (microbes.length < MAX_MICROBES) { 
-          let angle = random(TWO_PI);
-          let newX = this.x + cos(angle) * this.size;
-          let newY = this.y + sin(angle) * this.size;
-          
-          let distanceFromCenter = dist(newX, newY, width / 2, height / 2);
-          if (distanceFromCenter < petriRadius) {
-            microbes.push(new Microbe(newX, newY));
-            this.size *= 0.7;
-          }
-        }
-      }
-      mutate() {
-        if (!this.isMutated && random() < MUTATION_RATE) {
-          this.isMutated = true;
-          this.growthFactor *= 1.5; 
-          this.maxSize *= 1.2; 
-          this.mutationColor = color(255, 0, 0, 150);
-        }
-      }
-      death() {
-          this.isAlive = false; 
-          this.color = color(100, 100, 100, 100); 
-          this.size *= DEATH_SIZE_REDUCTION;  
-          setTimeout(() => {
-              if (this.size <= 0.5) {
-                  let index = microbes.indexOf(this);
-                  if (index > -1) {
-                      microbes.splice(index, 1); 
-                  }
-              }
-          }, DEATH_ANIMATION_DURATION); 
-          
-      }
-    
-      display() {
-          if (fun) {
-              fill(random(255), random(255), random(255), 150);
-          } else {
-              fill(this.isMutated ? this.mutationColor : this.color);
-          }
-          noStroke();
-          ellipse(this.x, this.y, this.size, this.size);
-      }
+       if (microbes.length < MAX_MICROBES) { 
+         let angle = random(TWO_PI);
+         let newX = this.x + cos(angle) * this.size;
+         let newY = this.y + sin(angle) * this.size;
+         
+         let distanceFromCenter = dist(newX, newY, width / 2, height / 2);
+         if (distanceFromCenter < petriRadius) {
+           microbes.push(new Microbe(newX, newY));
+           this.size *= 0.7;
+         }
+       }
+     }
+     mutate() {
+       if (!this.isMutated && random() < MUTATION_RATE) {
+         this.isMutated = true;
+         this.growthFactor *= 1.5; 
+         this.maxSize *= 1.2; 
+         this.mutationColor = color(255, 0, 0, 150);
+       }
+     }
+     death() {
+         this.isAlive = false; 
+         this.color = color(100, 100, 100, 100); 
+         this.size *= DEATH_SIZE_REDUCTION;  
+         setTimeout(() => {
+             if (this.size <= 0.5) {
+                 let index = microbes.indexOf(this);
+                 if (index > -1) {
+                     microbes.splice(index, 1); 
+                 }
+             }
+         }, DEATH_ANIMATION_DURATION); 
+     }
+
+     display() {
+         if (fun) {
+             fill(random(255), random(255), random(255), 150);
+         } else {
+             fill(this.isMutated ? this.mutationColor : this.color);
+         }
+         noStroke();
+         ellipse(this.x, this.y, this.size, this.size);
+     }
 }
 
 let lastLoggedHour = 0; 
+let previousPopulation = 0; 
 function draw() {
     if (!simulationActive) {
         return;
@@ -625,11 +624,12 @@ class DataBuilder {
         this.data = [];
     }
 
-    addPoint(count, mutation, hour, avgSize) {
+    addPoint(count, mutation,mutationrate, hour, avgSize) {
         this.data.push({
             point: {
                 count: count,
                 mutation: mutation,
+                mutationrate: mutationrate,
                 x: hour, 
                 y: avgSize 
             }
@@ -649,20 +649,22 @@ const builder = new DataBuilder();
 function logMicrobeData(microbes, currentHour, simulationActive) {
 
    const mutatedCount = microbes.filter(m => m.isMutated).length;
-   const mutationRate = mutatedCount / microbes.length;
+   const mutationRate = mutatedCount / microbes.length * 100;
     
-    const averageSize = microbes
-        .map (microbe => microbe.size)
-        .reduce((sum, size) => sum + size, 0)
-        / microbes.length;
-    builder.addPoint(microbes.length, mutatedCount, currentHour, averageSize);
-    
+   const initialPopulation = previousPopulation || microbes.length; 
+   const finalPopulation = microbes.length;
+   const averageSize = (finalPopulation - initialPopulation) / initialPopulation;
+
+    builder.addPoint(microbes.length, mutatedCount, mutationRate, currentHour, averageSize);
+
+    previousPopulation = finalPopulation;
+
     if (!simulationActive) {
         const chartButton = document.getElementById("btnChart");
         chartButton.disabled = false; 
         chartButton.classList.add("active");
         chartButton.addEventListener("click", function() {
-            window.location.href = "/chart?projectName=" + projectName;
+            window.location.href = "/chart?projectID=" + projectID;
         });
 
         let data = builder.toJSON();  
@@ -671,7 +673,7 @@ function logMicrobeData(microbes, currentHour, simulationActive) {
             if (!selectedProject.simulations) {
                 selectedProject.simulations = []; 
             }
-            selectedProject.simulations = [{point: { count: countMicrobes, x: 0, y: 0}}, ...JSON.parse(data).Data]; 
+            selectedProject.simulations = [{point: { count: countMicrobes, mutation: 0, mutationRate: 0, x: 0, y: 0}}, ...JSON.parse(data).Data]; 
             localStorage.setItem('savedProjects', JSON.stringify(savedProjects));  
         }
     }

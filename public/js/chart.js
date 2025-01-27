@@ -84,17 +84,18 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function mindestKeimzahlBerechnen(simulations, N_min) {
-  const startCountMicrobes = simulations[0].point.count;
-  const growthRates = simulations.map((sim, index) => {
-    if (index === 0) return 0; 
-    const prevCount = simulations[index - 1].point.count;
-    const currentCount = sim.point.count;
-    const timeElapsed = sim.point.x - simulations[index - 1].point.x;
-    return Math.log(currentCount / prevCount) / timeElapsed;
-  }).filter(rate => rate > 0); 
+  for (let i = 1; i < simulations.length; i++) {
+    const prevCount = simulations[i - 1].point.count;
+    const currCount = simulations[i].point.count;
 
-  const averageGrowthRate = growthRates.reduce((sum, rate) => sum + rate, 0) / growthRates.length;
-  const minTime = Math.log(N_min / startCountMicrobes) / averageGrowthRate;
+    if (prevCount < N_min && currCount >= N_min) {
+      const prevTime = simulations[i - 1].point.x;
+      const currTime = simulations[i].point.x;
 
-  return minTime.toFixed(2);
+      const interpolatedTime = prevTime + ((N_min - prevCount) / (currCount - prevCount)) * (currTime - prevTime);
+
+      return interpolatedTime.toFixed(2);
+    }
+  }
+  return -1;
 }

@@ -17,6 +17,7 @@ app.use(express.static(assetsPath));
 
 
 app.use('/assets/images', express.static(path.join(assetsPath, 'images')));
+app.use('/assets/plugins', express.static(path.join(assetsPath, 'plugins')));
 app.use('/public/js', express.static(path.join(publicPath, 'js')));
 
 

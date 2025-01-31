@@ -1,6 +1,16 @@
 # Microlife-Lab
-Simulation of the movement and spreading of microorganisms inside a petri dish.
+A simulation of the behaviour of micro-organisms based on enviroment parameters. 
 
-npm install 
+## Dependencies 
+* NodeJS 
 
-npm run start
+### Run / Install
+
+1. do "git clone https://github.com/TennerL/Microlife-Lab.git" or download it manually as .zip
+2. Install dependencies and libaries:
+> npm install 
+3. To run 
+> npm run start
+4. To build
+> npm run build
+

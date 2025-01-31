@@ -1,5 +1,5 @@
 {
-  "type":"module",
+  "type": "module",
   "name": "bs-projekt",
   "version": "1.0.0",
   "main": "main.mjs",
@@ -15,9 +15,11 @@
   "dependencies": {
     "ejs": "^3.1.10",
     "express": "^4.19.2",
-    "mathjs": "^14.1.0"
+    "mathjs": "^14.1.0",
+    "p5": "^1.11.3"
   },
   "devDependencies": {
+    "@types/p5": "^1.7.6",
     "electron": "^32.2.8",
     "electron-builder": "^25.1.8"
   },
@@ -32,12 +34,16 @@
       {
         "from": "public/",
         "to": "public/",
-        "filter": ["**/*"]
+        "filter": [
+          "**/*"
+        ]
       },
       {
         "from": "assets/",
         "to": "assets/",
-        "filter": ["**/*"]
+        "filter": [
+          "**/*"
+        ]
       }
     ]
   },

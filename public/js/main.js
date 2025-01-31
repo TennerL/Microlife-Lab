@@ -83,6 +83,19 @@ document.addEventListener('DOMContentLoaded', function() {
         const simulationTime = document.getElementById("txtSimulationDuration").value;
         const minGermCount = document.getElementById("txtMinGermCount").value;
 
+        if(simulationTime > 5 && simulationTimeUnit == "d"){
+            alert("Die Simulationsdauer muss zwischen 1 und 5 Tagen sein.");
+            return;
+        }
+        if(simulationTime > 600 && simulationTimeUnit == "h"){
+            alert("Die Simulationsdauer muss zwischen 1 und 600 Stunden sein.");
+            return;
+        }
+        if(countMicrobes > 100){
+            alert("Die Anfangsanzahl muss zwischen 1 und 100 sein.");
+            return;
+        }
+
         const projectData = {
             id: projectID,
             projectName: projectName,
@@ -226,6 +239,20 @@ document.addEventListener('DOMContentLoaded', function() {
             selectedProject.simulationTimeUnit = document.getElementById("ddlTimeUnit").value;
             selectedProject.simulationTime = document.getElementById("txtSimulationDuration").value;
             selectedProject.minGermCount = document.getElementById("txtMinGermCount").value;
+
+            if(selectedProject.simulationTime  > 5 && selectedProject.simulationTimeUnit == "d"){
+                alert("Die Simulationsdauer muss zwischen 1 und 5 Tagen sein.");
+                return;
+            }
+            if(selectedProject.simulationTime > 600 && selectedProject.simulationTimeUnit == "h"){
+                alert("Die Simulationsdauer muss zwischen 1 und 600 Stunden sein.");
+                return;
+            }
+            if(selectedProject.countMicrobes > 100){
+                alert("Die Anfangsanzahl muss zwischen 1 und 100 sein.");
+                return;
+            }
+    
     
             let projectIndex = savedProjects.findIndex(project => project.id == projectID);
             savedProjects[projectIndex] = selectedProject;  

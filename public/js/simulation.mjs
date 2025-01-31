@@ -1,6 +1,5 @@
 
-import p5 from '/assets/plugins/p5.js';
-
+const p5 = require("p5");
 import { 
     calculateGrowthRateCandida, 
     calculateGrowthRateAspergillusNiger, 

@@ -4,7 +4,7 @@
 //////////////////////////////////////
 
 
-export function calculateGrowthRateCandida(temperature, concentration, ph, moisture) {
+export function calculateGrowthRateCandida(temperature, concentration, ph, moisture,p) {
     let baseGrowthRate;
     
     if (temperature <= 0 || temperature > 50) {
@@ -32,7 +32,7 @@ export function calculateGrowthRateCandida(temperature, concentration, ph, moist
     return baseGrowthRate * nutrientFactor * pHFactor * moistureFactor
 }
 
-export function calculateGrowthRateBacillusSubtilis(temperature, concentration, ph, moisture) {
+export function calculateGrowthRateBacillusSubtilis(temperature, concentration, ph, moisture,p) {
 
     let baseGrowthRate
   
@@ -59,7 +59,7 @@ export function calculateGrowthRateBacillusSubtilis(temperature, concentration, 
     return baseGrowthRate * nutrientFactor * pHFactor * moistureFactor
   }
 
-export function calculateGrowthRateStaphylococcusAureus(temperature, concentration, ph, moisture) {
+export function calculateGrowthRateStaphylococcusAureus(temperature, concentration, ph, moisture,p) {
     let baseGrowthRate;
 
     if (temperature <= 0 || temperature > 46) {
@@ -83,7 +83,7 @@ export function calculateGrowthRateStaphylococcusAureus(temperature, concentrati
     return baseGrowthRate * nutrientFactor * pHFactor * moistureFactor
 }
 
-export function calculateGrowthRateEscherichiaColi(temperature, concentration, ph, moisture) {
+export function calculateGrowthRateEscherichiaColi(temperature, concentration, ph, moisture,p) {
     let baseGrowthRate;
 
     if (temperature <= 0 || temperature > 45) {
@@ -107,7 +107,7 @@ export function calculateGrowthRateEscherichiaColi(temperature, concentration, p
     return baseGrowthRate * nutrientFactor * pHFactor * moistureFactor
 }
 
-export function calculateGrowthRatePenicilliumNotatum(temperature, concentration, ph, moisture) {
+export function calculateGrowthRatePenicilliumNotatum(temperature, concentration, ph, moisture,p) {
     let baseGrowthRate;
 
 
@@ -251,19 +251,3 @@ const MAX_MICROBES = 2000
     }
     return baseDeathRate + crowdingFactor + tempStress + pHStress + moistureStress;
 }
-
-
-
-
-
-// export {
-//     calculateGrowthRateCandida,
-//     calculateGrowthRateAspergillusNiger,
-//     calculateGrowthRatePenicilliumNotatum,
-//     calculateGrowthRateEscherichiaColi,
-//     calculateGrowthRateStaphylococcusAureus,
-//     calculateGrowthRateBacillusSubtilis,
-//     calculateDivisionRate,
-//     calculateDeathRate
-// };
-

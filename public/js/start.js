@@ -35,7 +35,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 <li> 35 - 37 °C - Nahe der menschlichen Körpertemperatur (erhöhtes Risiko im Sommer)</li>
                 <li> pH-Wert 2,0 - 6,6 (viel Schwitzen, gesunde Haut hat einen pH von 4,5 - 5,5)</li>
                 <li> 0,1 - 5% - Glukose und/oder Harnstoff (Schweiß) begünstigen das Wachstum </li>
-                <li> >80% - Feuchtigkeit (Nach dem Duschen/Baden oder bei tropischem Klima)</li>
                 <li> Nach 24 - 48 Stunden kann sich Candida exponentiell vermehren </li> 
                 <li> 1000 - 10000 - Ab einer Mindestkeimzahl von 1000 machen sich die Symptome bemerkbar </li> 
                 <br><br> Fortfahren?
@@ -44,7 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 id: "example-candida",
                 projectName: "Beispiel (Candida)",
                 temperature: 26,
-                concentration: 4,
+                concentration: 80,
                 moisture: 80,
                 microOrganism: "candida",
                 countMicrobes: 10,

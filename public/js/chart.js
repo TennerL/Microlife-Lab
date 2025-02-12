@@ -20,9 +20,9 @@ document.addEventListener('DOMContentLoaded', function() {
       let warningIndicator2 = document.getElementById('imgWarning2');
       warningIndicator1.style.visibility = 'visible';
       warningIndicator2.style.visibility = 'visible';
-      document.getElementById('txtMindestkeimzahl').innerHTML = "Die Mindestkeimzahl wurde überschritten bei: "+minTime+" Stunden";
+      document.getElementById('txtMindestkeimzahl').innerHTML = "Der Grenzwert wurde überschritten bei: "+minTime+" Stunden";
     } else {
-      document.getElementById('txtMindestkeimzahl').innerHTML = "Die mindestkeimzahl wurde in der angegebenen Zeit nicht überschritten."
+      document.getElementById('txtMindestkeimzahl').innerHTML = "Der Grenzwert wurde in der angegebenen Zeit nicht überschritten."
     }
 
     const minLineData = xData.map(() => N_min);

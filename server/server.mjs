@@ -6,12 +6,12 @@ import { fileURLToPath } from 'url';
 const app = express();
 const PORT = 3000;
 
-// Use absolute paths for serving static files
-const __dirname = path.dirname(fileURLToPath(import.meta.url));  // Ensure correct directory
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));  
 const publicPath = path.join(__dirname, '../public');
 const assetsPath = path.join(__dirname, '../assets');
 
-// Serve static files
+
 app.use(express.static(publicPath));
 app.use(express.static(assetsPath));
 
@@ -24,7 +24,7 @@ app.use('/public/js', express.static(path.join(publicPath, 'js')));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '../renderer/views'));
 
-// Routes
+
 app.get('/', (req, res) => {
   res.render('pages/start/index.ejs', { title: 'Start' });
 });

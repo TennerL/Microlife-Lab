@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../../common/head'); %>
+  <style>
+    body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    }
+    #canvas-container {
+        display: inline-block;
+        margin-top: 20px;
+    }
+    input[type=range] {
+        width: 200px;
+    }
+    label {
+        margin-right: 2px;
+    }
+    div {
+        margin: 10px;
+    }
+      #graphContainer {
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        td {
+            text-align: center;
+            position: relative;
+            width: 50px; 
+        }
+        td::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: rgb(255, 255, 255); 
+            z-index: -1;
+        }
+        .marker {
+            position: relative;
+            z-index: 1;
+        }
+        .controls {
+            margin: auto;
+            display: block;
+        }
+        .cursor {
+            background-color: rgb(255, 255, 255); 
+            width: 5%; 
+            height: 20px; 
+            display: block;
+            margin: auto;
+            border-radius: 5px; 
+        }
+        .timeControls {
+          position:fixed;
+          top:46px;
+          right:100px;
+        }
+        input[type="radio"] {
+          display: none;
+        }
+  </style>
+</head>
+<body class="container bg-dark text-light">
+
+<header>
+  <%- include('header'); %>
+</header>
+
+<main>
+  </div>
+</div>
+
+
+  <script type="module" src="/js/simulation.mjs"></script>
+  <div class="btn-group btn-group-toggle timeControls" data-toggle="buttons">
+    <label class="btn btn-secondary active">
+      <input type="radio" name="options" id="normal" autocomplete="off" checked>
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-play-fill" viewBox="0 0 16 16">
+        <path d="m11.596 8.697-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393"/>
+      </svg>
+    </label>
+    <label class="btn btn-secondary">
+      <input type="radio" name="options" id="fast" autocomplete="off"> 
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-fast-forward-fill" viewBox="0 0 16 16">
+        <path d="M7.596 7.304a.802.802 0 0 1 0 1.392l-6.363 3.692C.713 12.69 0 12.345 0 11.692V4.308c0-.653.713-.998 1.233-.696z"/>
+        <path d="M15.596 7.304a.802.802 0 0 1 0 1.392l-6.363 3.692C8.713 12.69 8 12.345 8 11.692V4.308c0-.653.713-.998 1.233-.696z"/>
+      </svg>
+    </label>
+    <label class="btn btn-secondary">
+      <input type="radio" name="options" id="faster" autocomplete="off">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-skip-forward-fill" viewBox="0 0 16 16">
+        <path d="M15.5 3.5a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-1 0V8.753l-6.267 3.636c-.54.313-1.233-.066-1.233-.697v-2.94l-6.267 3.636C.693 12.703 0 12.324 0 11.693V4.308c0-.63.693-1.01 1.233-.696L7.5 7.248v-2.94c0-.63.693-1.01 1.233-.696L15 7.248V4a.5.5 0 0 1 .5-.5"/>
+      </svg>
+    </label>
+  </div>
+
+  <button id="btnChart" type="button" class="btn btn-lg btn-primary" style="position:fixed; right:50px; top:50px;" disabled>
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-graph-up" viewBox="0 0 16 16">
+      <path fill-rule="evenodd" d="M0 0h1v15h15v1H0zm14.817 3.113a.5.5 0 0 1 .07.704l-4.5 5.5a.5.5 0 0 1-.74.037L7.06 6.767l-3.656 5.027a.5.5 0 0 1-.808-.588l4-5.5a.5.5 0 0 1 .758-.06l2.609 2.61 4.15-5.073a.5.5 0 0 1 .704-.07"/>
+    </svg>
+  </button>
+  <div id="graphContainer"></div>
+  <div id="canvas-container"></div>
+</main>
+
+<footer>
+  <%- include('../../common/footer'); %>
+</footer>
+
+</body>
+</html>

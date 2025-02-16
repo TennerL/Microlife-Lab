@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../../common/head'); %>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+    .cards {
+      height: 350px;
+      border: 1px solid;
+      box-shadow: 1px 1px 8px 1px black;
+    }
+    .notice {
+      border: 1px solid;
+      box-shadow: 1px 1px 8px 1px black;
+    }
+  </style>
+</head>
+<body class="container bg-dark text-light">
+
+<header>
+  <%- include('header'); %>
+</header>
+
+<main>
+  <script src="/js/start.js"></script>
+
+
+  <div class="jumbotron bg-dark text-light">
+    <h1>Willkommen</h1>
+    <div class="card notice">
+      <div class="card-body bg-dark text-light">
+        Diese Anwendung simuliert das Wachstum verschiedener Mikroorganismen unter bestimmten Umwelteinflüssen. Auf dieser Seite finden sich vorkonfigurierte Presets. 
+        Ansonsten kann eine beliebige Simulation unter Projekt erstellt werden.
+      </div>
+    </div>
+  </div>
+  <br>
+  <div class="row justify-content-center">
+    <div class="col-md-3">
+      <div class="card cards bg-dark text-light">
+        <img class="card-img-top" src="/images/bread.jpg" style="height:160px;" alt="Card image cap">
+        <div class="card-body">
+          <p class="card-text">Unter welchen Bedingungen breitet sich Schimmel auf Brot aus? Ab wann ist es gesundheitlich bedenklich?</p>
+          <button type="button" id="btnSampleDialogAspergillus" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"/>
+          </svg></button>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card cards bg-dark text-light">
+        <img class="card-img-top" src="/images/ausschlag.jpg" style="height:160px;" alt="Card image cap">
+        <div class="card-body">
+          <p class="card-text">Welche Faktoren begünstigen die Entwicklung einer Pilzinfektion durch Candida albicans?</p>
+          <button type="button" id="btnSampleDialogCandida" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8"/>
+          </svg></button>
+        </div>
+      </div>
+    </div>
+   
+
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" style="width:800px;margin:auto;margin-top:100px">
+      <div class="modal-content bg-dark text-light" >
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Information</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div id="txtSample" class="modal-body">
+        </div>
+        <div class="modal-footer" id="divBtns">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schließen</button>
+          <button type="button" id="btnCreateSample" class="btn btn-primary">Speichern</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+
+</main>
+
+<footer>
+  <%- include('../../common/footer'); %>
+</footer>
+
+</body>
+</html>

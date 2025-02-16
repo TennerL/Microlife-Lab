@@ -1,0 +1,57 @@
+{
+  "type": "module",
+  "name": "MicroLife-Lab",
+  "version": "1.0.0",
+  "main": "main.mjs",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "ejs": "^3.1.10",
+    "express": "^4.19.2",
+    "mathjs": "^14.1.0",
+    "p5": "^1.11.3"
+  },
+  "devDependencies": {
+    "@types/p5": "^1.7.6",
+    "electron": "^32.2.8",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.microlifelab",
+    "productName": "MicroLife-Lab",
+    "win": {
+      "target": "nsis",
+      "icon": "petri_dish.ico"
+    },
+    "extraResources": [
+      {
+        "from": "public/",
+        "to": "public/",
+        "filter": [
+          "**/*"
+        ]
+      },
+      {
+        "from": "assets/",
+        "to": "assets/",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ]
+  },
+  "files": [
+    "main.mjs",
+    "server/server.mjs",
+    "renderer/**/*",
+    "public/**/*",
+    "assets/**/*"
+  ]
+}
